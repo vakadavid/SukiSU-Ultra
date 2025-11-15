@@ -461,13 +461,8 @@ static int do_get_wrapper_fd(void __user *arg) {
     }
     struct file* pf = fget(ret);
 
-	
     struct inode* wrapper_inode = file_inode(pf);
-	struct inode_security_struct *sec = selinux_inode(wrapper_inode);
-
-	struct inode_security_struct *sec =
-		(struct inode_security_struct *)wrapper_inode->i_security;
-#endif
+    struct inode_security_struct *sec = selinux_inode(wrapper_inode);
     if (sec) {
         sec->sid = ksu_file_sid;
     }
@@ -884,7 +879,7 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
     }
 
     // If magic2 is susfs and current process is root
-    if (magic2 == SUSFS_MAGIC && current_uid().val == 0) {
+    if (magic2 == DEVPTS_SUPER_MAGIC && current_uid().val == 0) {
 #ifdef CONFIG_KSU_SUSFS_SUS_PATH
         if (cmd == CMD_SUSFS_ADD_SUS_PATH) {
             susfs_add_sus_path(arg);
