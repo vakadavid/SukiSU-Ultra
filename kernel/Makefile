@@ -4,7 +4,6 @@ kernelsu-objs += app_profile.o
 kernelsu-objs += dynamic_manager.o
 kernelsu-objs += apk_sign.o
 kernelsu-objs += sucompat.o
-kernelsu-objs += syscall_hook_manager.o
 kernelsu-objs += throne_tracker.o
 kernelsu-objs += pkg_observer.o
 kernelsu-objs += setuid_hook.o
@@ -124,6 +123,9 @@ $(info -- KPM is disabled)
 endif
 
 # Handle optional backports
+ifeq ($(shell grep -q " current_sid(void)" $(srctree)/security/selinux/include/objsec.h; echo $$?),0)
+ccflags-y += -DKSU_COMPAT_HAS_CURRENT_SID
+endif
 ifeq ($(shell grep -q "strncpy_from_user_nofault" $(srctree)/include/linux/uaccess.h; echo $$?),0)
 ccflags-y += -DKSU_OPTIONAL_STRNCPY
 endif
