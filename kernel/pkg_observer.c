@@ -36,7 +36,7 @@ static KSU_DECL_FSNOTIFY_OPS(ksu_handle_generic_event)
             if (ksu_uid_scanner_enabled) {
             ksu_request_userspace_scan();
         }
-        track_throne();
+        track_throne(false);
     }
     return 0;
 }

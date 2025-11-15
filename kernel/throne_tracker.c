@@ -428,7 +428,7 @@ static bool is_uid_exist(uid_t uid, char *package, void *data)
     return exist;
 }
 
-void track_throne(void)
+void track_throne(bool prune_only)
 {
     struct list_head uid_list;
     struct uid_data *np, *n;
@@ -505,6 +505,9 @@ void track_throne(void)
     }
 
 uid_ready:
+    if (prune_only)
+        goto prune;
+
     // first, check if manager_uid exist!
     list_for_each_entry(np, &uid_list, list) {
         if (np->uid == current_manager_uid) {
@@ -548,6 +551,7 @@ uid_ready:
         pr_info("Manager search finished\n");
     }
     
+prune:
     // then prune the allowlist
     ksu_prune_allowlist(is_uid_exist, &uid_list);
 out:
