@@ -48,6 +48,7 @@ config KSU_MANUAL_HOOK
       If enabled, Hook required KernelSU syscalls with manually-patched function.
 
 menu "KernelSU - SUSFS"
+
 config KSU_SUSFS
 	bool "KernelSU addon - SUSFS"
 	depends on KSU
