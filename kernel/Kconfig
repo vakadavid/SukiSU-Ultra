@@ -22,7 +22,6 @@ config KSU_MULTI_MANAGER_SUPPORT
     help
         Enable multi KernelSU manager support
 
-
 config KSU_ALLOWLIST_WORKAROUND
     bool "KernelSU Session Keyring Init workaround"
     depends on KSU
@@ -49,7 +48,6 @@ config KSU_MANUAL_HOOK
       If enabled, Hook required KernelSU syscalls with manually-patched function.
 
 menu "KernelSU - SUSFS"
-
 config KSU_SUSFS
 	bool "KernelSU addon - SUSFS"
 	depends on KSU
