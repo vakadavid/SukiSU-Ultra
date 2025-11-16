@@ -17,7 +17,6 @@
 #include "app_profile.h"
 #include "syscall_hook_manager.h"
 
-
 #include "sulog.h"
 
 #define SU_PATH "/system/bin/su"
