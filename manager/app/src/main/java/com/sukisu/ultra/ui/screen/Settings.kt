@@ -79,6 +79,7 @@ fun SettingScreen(navigator: DestinationsNavigator) {
     val snackBarHost = LocalSnackbarHost.current
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    var isSuLogEnabled by remember { mutableStateOf(Natives.isSuLogEnabled()) }
     var selectedEngine by rememberSaveable {
         mutableStateOf(
             prefs.getString("webui_engine", "default") ?: "default"
@@ -270,6 +271,52 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             }
                         )
 
+                        var kernelSuLogMode by rememberSaveable {
+                            mutableIntStateOf(
+                                run {
+                                    val currentEnabled = Natives.isSuLogEnabled()
+                                    val savedPersist = prefs.getInt("kernel_sulog_mode", 0)
+                                    if (savedPersist == 2) 2 else if (!currentEnabled) 1 else 0
+                                }
+                            )
+                        }
+                        SuperDropdown(
+                            icon = Icons.Filled.NoAccounts,
+                            title = stringResource(id = R.string.settings_disable_sulog),
+                            summary = stringResource(id = R.string.settings_disable_sulog_summary),
+                            items = modeItems,
+                            selectedIndex = kernelSuLogMode,
+                            onSelectedIndexChange = { index ->
+                                when (index) {
+                                    // Default: enable and save to persist
+                                    0 -> if (Natives.setSuLogEnabled(true)) {
+                                        execKsud("feature save", true)
+                                        prefs.edit { putInt("kernel_sulog_mode", 0) }
+                                        kernelSuLogMode = 0
+                                        isSuLogEnabled = true
+                                    }
+
+                                    // Temporarily disable: save enabled state first, then disable
+                                    1 -> if (Natives.setSuLogEnabled(true)) {
+                                        execKsud("feature save", true)
+                                        if (Natives.setSuLogEnabled(false)) {
+                                            prefs.edit { putInt("kernel_sulog_mode", 0) }
+                                            kernelSuLogMode = 1
+                                            isSuLogEnabled = false
+                                        }
+                                    }
+
+                                    // Permanently disable: disable and save
+                                    2 -> if (Natives.setSuLogEnabled(false)) {
+                                        execKsud("feature save", true)
+                                        prefs.edit { putInt("kernel_sulog_mode", 2) }
+                                        kernelSuLogMode = 2
+                                        isSuLogEnabled = false
+                                    }
+                                }
+                            }
+                        )
+
                         // 卸载模块开关
                         var umountChecked by rememberSaveable { mutableStateOf(Natives.isDefaultUmountModules()) }
                         SwitchItem(
@@ -283,7 +330,6 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 }
                             }
                         )
-
 
                         // 强制签名验证开关
                         var forceSignatureVerification by rememberSaveable {
@@ -403,14 +449,16 @@ fun SettingScreen(navigator: DestinationsNavigator) {
 
                     // 查看使用日志
                     KsuIsValid {
-                        SettingItem(
-                            icon = Icons.Filled.Visibility,
-                            title = stringResource(R.string.log_viewer_view_logs),
-                            summary = stringResource(R.string.log_viewer_view_logs_summary),
-                            onClick = {
-                                navigator.navigate(LogViewerScreenDestination)
-                            }
-                        )
+                        if (isSuLogEnabled) {
+                            SettingItem(
+                                icon = Icons.Filled.Visibility,
+                                title = stringResource(R.string.log_viewer_view_logs),
+                                summary = stringResource(R.string.log_viewer_view_logs_summary),
+                                onClick = {
+                                    navigator.navigate(LogViewerScreenDestination)
+                                }
+                            )
+                        }
                     }
                     val lkmMode = Natives.isLkmMode
                     KsuIsValid {

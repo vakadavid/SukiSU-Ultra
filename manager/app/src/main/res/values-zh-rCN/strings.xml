@@ -750,4 +750,7 @@
     <string name="clear_custom_paths">清除自定义</string>
     <string name="apply_config">应用配置</string>
     <string name="config_applied">配置已应用到内核</string>
+    <string name="group_contains_apps">包含 %1$d 个应用</string>
+    <string name="settings_disable_sulog"> 禁用超级用户日志 </string>
+    <string name="settings_disable_sulog_summary">禁用 KernelSU 超级用户访问记录</string>
 </resources>

@@ -132,6 +132,7 @@ enum ksu_feature_id {
     KSU_FEATURE_SU_COMPAT = 0,
     KSU_FEATURE_KERNEL_UMOUNT = 1,
     KSU_FEATURE_ENHANCED_SECURITY = 2,
+	KSU_FEATURE_SULOG = 3,
 };
 
 // Generic feature API
@@ -211,8 +212,11 @@ bool is_kernel_umount_enabled();
 
 // Enhanced security
 bool set_enhanced_security_enabled(bool enabled);
-
 bool is_enhanced_security_enabled();
+
+// Su log
+bool set_sulog_enabled(bool enabled);
+bool is_sulog_enabled();
 
 // Other command structures
 struct ksu_get_full_version_cmd {

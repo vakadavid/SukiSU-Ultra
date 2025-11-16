@@ -1,9 +1,12 @@
 package com.sukisu.ultra.ui.screen
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,16 +25,30 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.runtime.*
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,6 +56,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.dergoogler.mmrl.ui.component.LabelItem
 import com.dergoogler.mmrl.ui.component.LabelItemDefaults
@@ -87,9 +105,6 @@ fun SuperUserScreen(navigator: DestinationsNavigator) {
 
     LaunchedEffect(navigator) {
         viewModel.search = ""
-        if (viewModel.appList.isEmpty()) {
-            // viewModel.fetchAppList()
-        }
     }
 
     LaunchedEffect(viewModel.selectedApps, viewModel.showBatchActions) {
@@ -305,6 +320,9 @@ private fun SuperUserContent(
     scope: CoroutineScope
 ) {
     val expandedGroups = remember { mutableStateOf(setOf<Int>()) }
+    val density = LocalDensity.current
+    val targetSizePx = remember(density) { with(density) { 36.dp.roundToPx() } }
+    val context = LocalContext.current
 
     PullToRefreshBox(
         modifier = Modifier.padding(innerPadding),
@@ -318,8 +336,9 @@ private fun SuperUserContent(
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             filteredAndSortedAppGroups.forEachIndexed { _, appGroup ->
-                item(key = appGroup.uid) {
+                item(key = "${appGroup.uid}-${appGroup.mainApp.packageName}") {
                     AppGroupItem(
+                        expandedGroups = expandedGroups,
                         appGroup = appGroup,
                         isSelected = appGroup.packageNames.any { viewModel.selectedApps.contains(it) },
                         onToggleSelection = {
@@ -344,34 +363,50 @@ private fun SuperUserContent(
                                 appGroup.packageNames.forEach { viewModel.toggleAppSelection(it) }
                             }
                         },
-                        viewModel = viewModel,
-                        navigator = navigator,
-                        isExpanded = expandedGroups.value.contains(appGroup.uid)
+                        viewModel = viewModel
                     )
                 }
 
-                if (expandedGroups.value.contains(appGroup.uid) && appGroup.apps.size > 1) {
-                    items(appGroup.apps.drop(1), key = { it.packageName }) { app ->
-                        ListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
-                                .clickable {
-                                    navigator.navigate(AppProfileScreenDestination(app))
-                                },
-                            headlineContent = { Text(app.label, style = MaterialTheme.typography.bodyMedium) },
-                            supportingContent = { Text(app.packageName, style = MaterialTheme.typography.bodySmall) },
-                            leadingContent = {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
-                                        .data(app.packageInfo)
-                                        .crossfade(true)
-                                        .build(),
-                                    contentDescription = app.label,
-                                    modifier = Modifier.padding(4.dp).width(36.dp).height(36.dp)
-                                )
-                            }
-                        )
+                if (appGroup.apps.size <= 1) return@forEachIndexed
+
+                items(appGroup.apps, key = { "${it.packageName}-${it.uid}" }) { app ->
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(context)
+                            .data(app.packageInfo)
+                            .size(targetSizePx)
+                            .crossfade(true)
+                            .build()
+                    )
+
+                    val listItemContent = remember(app.packageName, appGroup.uid) {
+                        @Composable {
+                            ListItem(
+                                modifier = Modifier
+                                    .clickable { navigator.navigate(AppProfileScreenDestination(app)) }
+                                    .fillMaxWidth()
+                                    .padding(start = 10.dp),
+                                headlineContent = { Text(app.label, style = MaterialTheme.typography.bodyMedium) },
+                                supportingContent = { Text(app.packageName, style = MaterialTheme.typography.bodySmall) },
+                                leadingContent = {
+                                    Image(
+                                        painter = painter,
+                                        contentDescription = app.label,
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .size(36.dp),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visible = expandedGroups.value.contains(appGroup.uid),
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        listItemContent()
                     }
                 }
             }
@@ -787,8 +822,7 @@ private fun AppGroupItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     viewModel: SuperUserViewModel,
-    navigator: DestinationsNavigator,
-    isExpanded: Boolean = false
+    expandedGroups: MutableState<Set<Int>>
 ) {
     val mainApp = appGroup.mainApp
 
@@ -800,39 +834,36 @@ private fun AppGroupItem(
             )
         },
         headlineContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(mainApp.label)
-                if (appGroup.apps.size > 1) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                    ) {
-                        Text(
-                            text = "${appGroup.apps.size} apps",
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
-                    Icon(
-                        imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
+            Text(mainApp.label)
         },
         supportingContent = {
             Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("UID: ${appGroup.uid}")
-                }
-                if (appGroup.apps.size == 1) {
-                    Text(mainApp.packageName)
+                val summaryText = if (appGroup.apps.size > 1) {
+                    stringResource(R.string.group_contains_apps, appGroup.apps.size)
+                } else {
+                    mainApp.packageName
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(summaryText)
+
+                    if (appGroup.apps.size > 1) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            modifier = Modifier.rotate(
+                                animateFloatAsState(
+                                    targetValue = if (expandedGroups.value.contains(appGroup.uid)) 180f else 0f,
+                                    animationSpec = tween(200, easing = LinearOutSlowInEasing),
+                                    label = ""
+                                ).value
+                            )
+                        )
+                    }
+                }
 
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     if (appGroup.allowSu) {
@@ -864,6 +895,17 @@ private fun AppGroupItem(
                             )
                         )
                     }
+                    if (appGroup.apps.size > 1) {
+                        appGroup.userName?.let {
+                            LabelItem(
+                                text = it,
+                                style = LabelItemDefaults.style.copy(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                )
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -878,7 +920,17 @@ private fun AppGroupItem(
             )
         },
         trailingContent = {
-            if (viewModel.showBatchActions) {
+            AnimatedVisibility(
+                visible = viewModel.showBatchActions,
+                enter = fadeIn(animationSpec = tween(200)) + scaleIn(
+                    animationSpec = tween(200),
+                    initialScale = 0.6f
+                ),
+                exit = fadeOut(animationSpec = tween(200)) + scaleOut(
+                    animationSpec = tween(200),
+                    targetScale = 0.6f
+                )
+            ) {
                 val checkboxInteractionSource = remember { MutableInteractionSource() }
                 val isCheckboxPressed by checkboxInteractionSource.collectIsPressedAsState()
 

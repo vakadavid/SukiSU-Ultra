@@ -20,7 +20,6 @@
 #include "klog.h" // IWYU pragma: keep
 #include "ksud.h"
 #include "manager.h"
-#include "sulog.h"
 #include "selinux/selinux.h"
 #include "objsec.h"
 #include "file_wrapper.h"
@@ -29,6 +28,7 @@
 #include "dynamic_manager.h"
 #include "umount_manager.h"
 
+#include "sulog.h"
 #ifdef CONFIG_KSU_MANUAL_SU
 #include "manual_su.h"
 #endif

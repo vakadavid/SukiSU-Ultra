@@ -17,6 +17,7 @@ pub enum FeatureId {
     SuCompat = 0,
     KernelUmount = 1,
     EnhancedSecurity = 2,
+    SuLog = 3,
 }
 
 impl FeatureId {
@@ -25,6 +26,7 @@ impl FeatureId {
             0 => Some(FeatureId::SuCompat),
             1 => Some(FeatureId::KernelUmount),
             2 => Some(FeatureId::EnhancedSecurity),
+            3 => Some(FeatureId::SuLog),
             _ => None,
         }
     }
@@ -34,6 +36,7 @@ impl FeatureId {
             FeatureId::SuCompat => "su_compat",
             FeatureId::KernelUmount => "kernel_umount",
             FeatureId::EnhancedSecurity => "enhanced_security",
+            FeatureId::SuLog => "sulog",
         }
     }
 
@@ -48,6 +51,9 @@ impl FeatureId {
             FeatureId::EnhancedSecurity => {
                 "Enhanced Security - disable non‑KSU root elevation and unauthorized UID downgrades"
             }
+            FeatureId::SuLog => {
+                "SU Log - enables logging of SU command usage to kernel log for auditing purposes"
+            }
         }
     }
 }
@@ -57,6 +63,7 @@ fn parse_feature_id(name: &str) -> Result<FeatureId> {
         "su_compat" | "0" => Ok(FeatureId::SuCompat),
         "kernel_umount" | "1" => Ok(FeatureId::KernelUmount),
         "enhanced_security" | "2" => Ok(FeatureId::EnhancedSecurity),
+        "sulog" | "3" => Ok(FeatureId::SuLog),
         _ => bail!("Unknown feature: {}", name),
     }
 }
@@ -234,6 +241,7 @@ pub fn list_features() -> Result<()> {
         FeatureId::SuCompat,
         FeatureId::KernelUmount,
         FeatureId::EnhancedSecurity,
+        FeatureId::SuLog,
     ];
 
     for feature_id in all_features.iter() {
@@ -297,6 +305,7 @@ pub fn save_config() -> Result<()> {
         FeatureId::SuCompat,
         FeatureId::KernelUmount,
         FeatureId::EnhancedSecurity,
+        FeatureId::SuLog,
     ];
 
     for feature_id in all_features.iter() {
