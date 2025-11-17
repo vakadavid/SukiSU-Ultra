@@ -1,13 +1,23 @@
 package zako.zako.zako.zakoui.screen.moreSettings.component
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Scanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,9 +30,22 @@ import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.list.ListDialog
 import com.maxkeppeler.sheets.list.models.ListOption
 import com.maxkeppeler.sheets.list.models.ListSelection
+import com.sukisu.ultra.Natives
 import zako.zako.zako.zakoui.screen.moreSettings.util.LocaleHelper
 import com.sukisu.ultra.R
+import com.sukisu.ultra.ui.component.ConfirmResult
+import com.sukisu.ultra.ui.component.rememberConfirmDialog
+import com.sukisu.ultra.ui.screen.SwitchItem
 import com.sukisu.ultra.ui.theme.*
+import com.sukisu.ultra.ui.util.cleanRuntimeEnvironment
+import com.sukisu.ultra.ui.util.getUidMultiUserScan
+import com.sukisu.ultra.ui.util.readUidScannerFile
+import com.sukisu.ultra.ui.util.setUidAutoScan
+import com.sukisu.ultra.ui.util.setUidMultiUserScan
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import zako.zako.zako.zakoui.screen.moreSettings.MoreSettingsHandlers
 import zako.zako.zako.zakoui.screen.moreSettings.state.MoreSettingsState
 
@@ -473,4 +496,125 @@ fun DynamicManagerDialog(
             }
         }
     )
+}
+
+@Composable
+fun UidScannerSection(
+    prefs: SharedPreferences,
+    snackBarHost: SnackbarHostState,
+    scope: CoroutineScope,
+    context: Context
+) {
+    if (Natives.version < Natives.MINIMAL_SUPPORTED_UID_SCANNER) return
+
+    val realAuto = Natives.isUidScannerEnabled()
+    val realMulti = getUidMultiUserScan()
+
+    var autoOn by remember { mutableStateOf(realAuto) }
+    var multiOn by remember { mutableStateOf(realMulti) }
+
+    LaunchedEffect(Unit) {
+        autoOn = realAuto
+        multiOn = realMulti
+        prefs.edit {
+            putBoolean("uid_auto_scan", autoOn)
+            putBoolean("uid_multi_user_scan", multiOn)
+        }
+    }
+
+    SwitchItem(
+        icon = Icons.Filled.Scanner,
+        title = stringResource(R.string.uid_auto_scan_title),
+        summary = stringResource(R.string.uid_auto_scan_summary),
+        checked = autoOn,
+        onCheckedChange = { target ->
+            autoOn = target
+            if (!target) multiOn = false
+
+            scope.launch(Dispatchers.IO) {
+                setUidAutoScan(target)
+                val actual = Natives.isUidScannerEnabled() || readUidScannerFile()
+                withContext(Dispatchers.Main) {
+                    autoOn = actual
+                    if (!actual) multiOn = false
+                    prefs.edit {
+                        putBoolean("uid_auto_scan", actual)
+                        putBoolean("uid_multi_user_scan", multiOn)
+                    }
+                    if (actual != target) {
+                        snackBarHost.showSnackbar(
+                            context.getString(R.string.uid_scanner_setting_failed)
+                        )
+                    }
+                }
+            }
+        }
+    )
+
+    AnimatedVisibility(
+        visible = autoOn,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
+    ) {
+        SwitchItem(
+            icon = Icons.Filled.Groups,
+            title = stringResource(R.string.uid_multi_user_scan_title),
+            summary = stringResource(R.string.uid_multi_user_scan_summary),
+            checked = multiOn,
+            onCheckedChange = { target ->
+                scope.launch(Dispatchers.IO) {
+                    val ok = setUidMultiUserScan(target)
+                    withContext(Dispatchers.Main) {
+                        if (ok) {
+                            multiOn = target
+                            prefs.edit { putBoolean("uid_multi_user_scan", target) }
+                        } else {
+                            snackBarHost.showSnackbar(
+                                context.getString(R.string.uid_scanner_setting_failed)
+                            )
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    AnimatedVisibility(
+        visible = autoOn,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
+    ) {
+        val confirmDialog = rememberConfirmDialog()
+        com.sukisu.ultra.ui.screen.SettingItem(
+            icon = Icons.Filled.CleaningServices,
+            title = stringResource(R.string.clean_runtime_environment),
+            summary = stringResource(R.string.clean_runtime_environment_summary),
+            onClick = {
+                scope.launch {
+                    if (confirmDialog.awaitConfirm(
+                            title = context.getString(R.string.clean_runtime_environment),
+                            content = context.getString(R.string.clean_runtime_environment_confirm)
+                        ) == ConfirmResult.Confirmed
+                    ) {
+                        if (cleanRuntimeEnvironment()) {
+                            autoOn = false
+                            multiOn = false
+                            prefs.edit {
+                                putBoolean("uid_auto_scan", false)
+                                putBoolean("uid_multi_user_scan", false)
+                            }
+                            Natives.setUidScannerEnabled(false)
+                            snackBarHost.showSnackbar(
+                                context.getString(R.string.clean_runtime_environment_success)
+                            )
+                        } else {
+                            snackBarHost.showSnackbar(
+                                context.getString(R.string.clean_runtime_environment_failed)
+                            )
+                        }
+                    }
+                }
+            }
+        )
+    }
 }
