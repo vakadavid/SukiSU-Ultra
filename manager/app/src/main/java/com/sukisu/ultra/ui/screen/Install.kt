@@ -353,38 +353,40 @@ fun InstallScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // 使用本地的LKM文件
-                ElevatedCard(
-                    colors = getCardColors(MaterialTheme.colorScheme.surfaceVariant),
-                    elevation = getCardElevation(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 12.dp),
-                ) {
-                    ListItem(
-                        headlineContent = {
-                            Text(stringResource(id = R.string.install_upload_lkm_file))
-                        },
-                        supportingContent = {
-                            (lkmSelection as? LkmSelection.LkmUri)?.let {
-                                Text(
-                                    stringResource(
-                                        id = R.string.selected_lkm,
-                                        it.uri.lastPathSegment ?: "(file)"
-                                    )
-                                )
-                            }
-                        },
-                        leadingContent = {
-                            Icon(
-                                Icons.AutoMirrored.Filled.Input,
-                                contentDescription = null
-                            )
-                        },
+                if (isGKI) {
+                    // 使用本地的LKM文件
+                    ElevatedCard(
+                        colors = getCardColors(MaterialTheme.colorScheme.surfaceVariant),
+                        elevation = getCardElevation(),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onLkmUpload() }
-                    )
+                            .padding(bottom = 12.dp),
+                    ) {
+                        ListItem(
+                            headlineContent = {
+                                Text(stringResource(id = R.string.install_upload_lkm_file))
+                            },
+                            supportingContent = {
+                                (lkmSelection as? LkmSelection.LkmUri)?.let {
+                                    Text(
+                                        stringResource(
+                                            id = R.string.selected_lkm,
+                                            it.uri.lastPathSegment ?: "(file)"
+                                        )
+                                    )
+                                }
+                            },
+                            leadingContent = {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.Input,
+                                    contentDescription = null
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onLkmUpload() }
+                        )
+                    }
                 }
 
                 (installMethod as? InstallMethod.HorizonKernel)?.let { method ->
