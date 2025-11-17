@@ -105,7 +105,7 @@ class ModuleViewModel : ViewModel() {
             ).thenBy(Collator.getInstance(Locale.getDefault()), ModuleInfo::id)
         modules.filter {
             it.id.contains(search, true) || it.name.contains(search, true) || HanziToPinyin.getInstance()
-                .toPinyinString(it.name).contains(search, true)
+                .toPinyinString(it.name)?.contains(search, true) == true
         }.sortedWith(comparator).also {
             isRefreshing = false
         }

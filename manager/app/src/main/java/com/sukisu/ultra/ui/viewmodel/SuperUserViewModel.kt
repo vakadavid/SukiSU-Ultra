@@ -352,7 +352,7 @@ class SuperUserViewModel : ViewModel() {
             group.apps.any { app ->
                 app.label.contains(search, true) ||
                         app.packageName.contains(search, true) ||
-                        HanziToPinyin.getInstance().toPinyinString(app.label).contains(search, true)
+                        HanziToPinyin.getInstance().toPinyinString(app.label)?.contains(search, true) == true
             }
         }.filter { group ->
             group.uid == 2000 || showSystemApps ||

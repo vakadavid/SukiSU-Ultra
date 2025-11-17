@@ -70,9 +70,6 @@ class MoreSettingsState(
     // SELinux状态
     var selinuxEnabled by mutableStateOf(false)
 
-    // SuSFS 状态
-    var isSusFSEnabled by mutableStateOf(true)
-
     // 卡片配置状态
     var cardAlpha by mutableFloatStateOf(CardConfig.cardAlpha)
     var cardDim by mutableFloatStateOf(CardConfig.cardDim)

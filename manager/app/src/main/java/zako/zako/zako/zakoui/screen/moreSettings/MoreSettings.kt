@@ -17,6 +17,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -33,8 +37,8 @@ import com.sukisu.ultra.Natives
 import com.sukisu.ultra.R
 import com.sukisu.ultra.ui.theme.component.ImageEditorDialog
 import com.sukisu.ultra.ui.component.KsuIsValid
+import com.sukisu.ultra.ui.screen.SwitchItem
 import com.sukisu.ultra.ui.theme.*
-import com.sukisu.ultra.ui.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,6 +49,7 @@ import zako.zako.zako.zakoui.screen.moreSettings.component.SettingItem
 import zako.zako.zako.zakoui.screen.moreSettings.component.SettingsCard
 import zako.zako.zako.zakoui.screen.moreSettings.component.SettingsDivider
 import zako.zako.zako.zakoui.screen.moreSettings.component.SwitchSettingItem
+import zako.zako.zako.zakoui.screen.moreSettings.component.UidScannerSection
 import zako.zako.zako.zakoui.screen.moreSettings.state.MoreSettingsState
 import kotlin.math.roundToInt
 
@@ -341,6 +346,11 @@ private fun AdvancedSettings(
     state: MoreSettingsState,
     handlers: MoreSettingsHandlers
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackBarHost = remember { SnackbarHostState() }
+    val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
+
     SettingsCard(title = stringResource(R.string.advanced_settings)) {
         // SELinux 开关
         SwitchSettingItem(
@@ -352,6 +362,27 @@ private fun AdvancedSettings(
             checked = state.selinuxEnabled,
             onChange = handlers::handleSelinuxChange
         )
+
+        var forceSignatureVerification by rememberSaveable {
+            mutableStateOf(prefs.getBoolean("force_signature_verification", false))
+        }
+
+        // 强制签名验证开关
+        SwitchItem(
+            icon = Icons.Filled.Security,
+            title = stringResource(R.string.module_signature_verification),
+            summary = stringResource(R.string.module_signature_verification_summary),
+            checked = forceSignatureVerification,
+            onCheckedChange = { enabled ->
+                prefs.edit { putBoolean("force_signature_verification", enabled) }
+                forceSignatureVerification = enabled
+            }
+        )
+
+        // UID 扫描开关
+        if (Natives.version >= Natives.MINIMAL_SUPPORTED_UID_SCANNER && Natives.version >= Natives.MINIMAL_NEW_IOCTL_KERNEL) {
+            UidScannerSection(prefs, snackBarHost, scope, context)
+        }
 
         // 动态管理器设置
         if (Natives.version >= Natives.MINIMAL_SUPPORTED_DYNAMIC_MANAGER && Natives.version >= Natives.MINIMAL_NEW_IOCTL_KERNEL) {
