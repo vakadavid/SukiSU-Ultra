@@ -13,7 +13,6 @@ import android.util.Log
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
-import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -22,7 +21,6 @@ import com.sukisu.ultra.Natives
 import com.sukisu.ultra.ksuApp
 import org.json.JSONArray
 import java.io.File
-import java.util.concurrent.CountDownLatch
 
 
 /**
@@ -669,15 +667,14 @@ fun readUidScannerFile(): Boolean {
     return try {
         ShellUtils.fastCmd(shell, "cat /data/adb/ksu/.uid_scanner").trim() == "1"
     } catch (_: Exception) {
-         false
+        false
     }
 }
 
-fun addUmountPath(path: String, checkMnt: Boolean, flags: Int): Boolean {
+fun addUmountPath(path: String, flags: Int): Boolean {
     val shell = getRootShell()
-    val checkMntFlag = if (checkMnt) "--check-mnt" else ""
     val flagsArg = if (flags >= 0) "--flags $flags" else ""
-    val cmd = "${getKsuDaemonPath()} umount add $path $checkMntFlag $flagsArg"
+    val cmd = "${getKsuDaemonPath()} umount add $path $flagsArg"
     val result = ShellUtils.fastCmdResult(shell, cmd)
     Log.i(TAG, "add umount path $path result: $result")
     return result

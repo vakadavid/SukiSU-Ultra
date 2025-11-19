@@ -114,7 +114,6 @@
     <string name="install_upload_lkm_file">Gunakan berkas LKM lokal</string>
     <string name="install_only_support_ko_file">Hanya berkas .ko yang didukung</string>
     <string name="select_file_tip">%1$s image partisi terekomendasi</string>
-    <string name="select_file_tip_vendor">(tidak stabil)</string>
     <string name="select_kmi">Pilih KMI</string>
     <string name="settings_uninstall">Hapus</string>
     <string name="settings_uninstall_temporary">Hapus sementara</string>
@@ -129,7 +128,6 @@
     <string name="selected_lkm">LKM dipilih: %s</string>
     <string name="save_log">Simpan Log</string>
     <string name="log_saved">Log disimpan</string>
-    <string name="sus_su_mode">Mode SuS SU:</string>
     <!-- Module related -->
     <string name="module_install_confirm">konfirmasi pemasangan modul %1$s?</string>
     <string name="unknown_module">module tidak dikenal</string>
@@ -290,8 +288,6 @@
     <string name="advanced_settings">Pengaturan Lanjutan</string>
     <string name="appearance_settings">Kustomisasi toolbar</string>
     <string name="back">Kembali</string>
-    <string name="susfs_enabled">SuSFS dinyalakan</string>
-    <string name="susfs_disabled">SuSFS dimatikan</string>
     <string name="background_set_success">Set latar belakang berhasil</string>
     <string name="background_removed">Latar belakang khusus yang dihapus</string>
     <string name="icon_switch_title">Ubah ikon</string>
@@ -608,7 +604,6 @@
     <string name="loop_paths_section">Jalur Loop</string>
     <string name="add_loop_path">Tambahkan Jalur Loop</string>
     <!-- 循环路径功能描述 -->
-    <string name="sus_loop_path_feature_label">Jalur Loop SUS</string>
     <string name="sus_loop_paths_description_title">Konfigurasi Jalur Loop</string>
     <string name="sus_loop_paths_description_text">Jalur loop ditandai ulang sebagai SUS_PATH pada setiap startup aplikasi pengguna non-root atau layanan terisolasi. Ini membantu mengatasi masalah di mana jalur yang ditambahkan mungkin memiliki status inode direset atau inode dibuat ulang di kernel.</string>
     <string name="avc_log_spoofing">Palsukan log AVC</string>
@@ -662,7 +657,6 @@ Diaktifkan: Aktifkan pemalsuan sus tcontext dari \'su\' dengan \'kernel\' yang d
     <string name="uid_multi_user_scan_title">Pemindaian Aplikasi Multi-Pengguna</string>
     <string name="uid_multi_user_scan_summary">Ketika diaktifkan, fitur ini akan memindai aplikasi untuk semua pengguna, termasuk profil kerja</string>
     <string name="uid_scanner_setting_failed">Gagal mengatur, silakan periksa perizinan</string>
-    <string name="uid_scanner_setting_error">Gagal mengatur: %s</string>
     <string name="clean_runtime_environment">Bersihkan Lingkungan Runtime</string>
     <string name="clean_runtime_environment_summary">Bersihkan berkas runtime dan hentikan layanan pemindai</string>
     <string name="clean_runtime_environment_confirm">Apakah Anda yakin ingin membersihkan lingkungan runtime? Tindakan ini akan menghentikan layanan pemindai dan menghapus berkas yang terkait.</string>

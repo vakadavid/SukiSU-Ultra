@@ -16,7 +16,6 @@ enum umount_entry_state {
 struct umount_entry {
     struct list_head list;
     char path[256];
-    bool check_mnt;
     int flags;
     enum umount_entry_state state;
     bool is_default;
@@ -40,7 +39,6 @@ enum umount_manager_op {
 struct ksu_umount_manager_cmd {
     __u32 operation;
     char path[256];
-    __u8 check_mnt;
     __s32 flags;
     __u32 count;
     __aligned_u64 entries_ptr;
@@ -48,7 +46,6 @@ struct ksu_umount_manager_cmd {
 
 struct ksu_umount_entry_info {
     char path[256];
-    __u8 check_mnt;
     __s32 flags;
     __u8 is_default;
     __u32 state;
@@ -57,7 +54,7 @@ struct ksu_umount_entry_info {
 
 int ksu_umount_manager_init(void);
 void ksu_umount_manager_exit(void);
-int ksu_umount_manager_add(const char *path, bool check_mnt, int flags, bool is_default);
+int ksu_umount_manager_add(const char *path, int flags, bool is_default);
 int ksu_umount_manager_remove(const char *path);
 void ksu_umount_manager_execute_all(const struct cred *cred);
 int ksu_umount_manager_get_entries(struct ksu_umount_entry_info __user *entries, u32 *count);

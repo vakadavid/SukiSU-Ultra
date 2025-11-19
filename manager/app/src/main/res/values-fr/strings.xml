@@ -126,7 +126,6 @@
     <string name="selected_lkm">LKM sélectionné : %s</string>
     <string name="save_log">Enregistrer les journaux</string>
     <string name="log_saved">Journaux enregistrés</string>
-    <string name="sus_su_mode">Mode Sus</string>
     <!-- Module related -->
     <string name="module_install_confirm">confirmer l\'installation du module %1$s?</string>
     <string name="unknown_module">module inconnu</string>
@@ -276,8 +275,6 @@
     <string name="advanced_settings">Paramètres avancés</string>
     <string name="appearance_settings">Choisir les boutons à afficher</string>
     <string name="back">Reviens</string>
-    <string name="susfs_enabled">SuSFS activé</string>
-    <string name="susfs_disabled">SuSFS désactivé</string>
     <string name="background_set_success">Fond d\'écran défini avec succès</string>
     <string name="background_removed">Fond d\'écran personnalisé supprimé</string>
     <string name="icon_switch_title">Icône alternative</string>

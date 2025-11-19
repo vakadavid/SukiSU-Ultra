@@ -10,8 +10,14 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -21,13 +27,13 @@ import com.dergoogler.mmrl.platform.model.ModId
 import com.dergoogler.mmrl.webui.interfaces.WXOptions
 import com.sukisu.ultra.ui.util.createRootShell
 import com.sukisu.ultra.ui.viewmodel.SuperUserViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 
 @SuppressLint("SetJavaScriptEnabled")
 class WebUIActivity : ComponentActivity() {
     private val rootShell by lazy { createRootShell(true) }
-    private val superUserViewModel: SuperUserViewModel by viewModels()
     private var webView = null as WebView?
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +46,21 @@ class WebUIActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            superUserViewModel.fetchAppList()
+        setContent {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
 
+        lifecycleScope.launch {
+            SuperUserViewModel.isAppListLoaded.first { it }
+            setupWebView()
+        }
+    }
+    private fun setupWebView() {
         val moduleId = intent.getStringExtra("id") ?: finishAndRemoveTask().let { return }
         val name = intent.getStringExtra("name") ?: finishAndRemoveTask().let { return }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {

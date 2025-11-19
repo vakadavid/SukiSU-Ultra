@@ -111,7 +111,6 @@
     <string name="install_inactive_slot_warning">Ваш пристрій буде **ПРИМУСОВО** завантажено в поточний неактивний слот після перезавантаження!\nВикористовуйте цю опцію лише після завершення OTA.\nПродовжити?</string>
     <string name="install_next">Далі</string>
     <string name="select_file_tip">Рекомендується образ розділу %1$s</string>
-    <string name="select_file_tip_vendor">(нестабільно)</string>
     <string name="select_kmi">Вибрати KMI</string>
     <string name="settings_uninstall">Видалити</string>
     <string name="settings_uninstall_temporary">Тимчасово видалити</string>
@@ -126,7 +125,6 @@
     <string name="selected_lkm">Обраний LKM: %s</string>
     <string name="save_log">Зберегти логи</string>
     <string name="log_saved">Логи збережено</string>
-    <string name="sus_su_mode">Режим SuS SU:</string>
     <!-- Module related -->
     <string name="module_install_confirm">Підтвердити встановлення модуля %1$s?</string>
     <string name="unknown_module">невідомий модуль</string>
@@ -278,8 +276,6 @@
     <string name="advanced_settings">Розширені налаштування</string>
     <string name="appearance_settings">Налаштувати панель інструментів</string>
     <string name="back">Повернутися</string>
-    <string name="susfs_enabled">SuSFS увімкнено</string>
-    <string name="susfs_disabled">SuSFS вимкнено</string>
     <string name="background_set_success">Фон успішно встановлено</string>
     <string name="background_removed">Видалено власні фони</string>
     <string name="icon_switch_title">Альтернативна іконка</string>

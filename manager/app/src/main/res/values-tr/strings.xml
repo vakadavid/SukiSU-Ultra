@@ -112,7 +112,6 @@
     <string name="install_upload_lkm_file">Yerel LKM dosyası kullan</string>
     <string name="install_only_support_ko_file">Yalnızca .ko dosyaları desteklenir</string>
     <string name="select_file_tip">%1$s bölüm görüntüsü önerilir</string>
-    <string name="select_file_tip_vendor">(kararsız)</string>
     <string name="select_kmi">KMI seçin</string>
     <string name="settings_uninstall">Kaldır</string>
     <string name="settings_uninstall_temporary">Geçici olarak kaldır</string>
@@ -127,7 +126,6 @@
     <string name="selected_lkm">Seçilen LKM: %s</string>
     <string name="save_log">Günlükleri kaydet</string>
     <string name="log_saved">Günlükler kaydedildi</string>
-    <string name="sus_su_mode">SuS SU modu:</string>
     <!-- Module related -->
     <string name="module_install_confirm">%1$s modülünü yüklemek istediğinizden emin misiniz?</string>
     <string name="unknown_module">Bilinmeyen modül</string>
@@ -288,8 +286,6 @@
     <string name="advanced_settings">Gelişmiş Ayarlar</string>
     <string name="appearance_settings">Araç çubuğunu özelleştir</string>
     <string name="back">Geri</string>
-    <string name="susfs_enabled">SuSFS etkin</string>
-    <string name="susfs_disabled">SuSFS devre dışı</string>
     <string name="background_set_success">Arka plan başarıyla ayarlandı</string>
     <string name="background_removed">Özel arka planlar kaldırıldı</string>
     <string name="icon_switch_title">Alternatif simge</string>
@@ -606,7 +602,6 @@
     <string name="loop_paths_section">Döngü Yolları</string>
     <string name="add_loop_path">Döngü Yolu Ekle</string>
     <!-- 循环路径功能描述 -->
-    <string name="sus_loop_path_feature_label">SUS Döngü Yolu</string>
     <string name="sus_loop_paths_description_title">Döngü Yolu Yapılandırması</string>
     <string name="sus_loop_paths_description_text">Döngü yolları, her kök olmayan (non-root) kullanıcı uygulaması veya yalıtılmış hizmet başlangıcında SUS_PATH olarak yeniden işaretlenir. Bu, eklenen yolların inode durumunun sıfırlanması veya çekirdekte yeniden oluşturulması gibi sorunları gidermeye yardımcı olur.</string>
     <string name="avc_log_spoofing">AVC Günlük Kaydı Taklidi</string>
@@ -660,7 +655,6 @@ etkin: Çekirdekteki AVC günlük kaydında, \'su\' komutuna ait tcontext\'i \'k
     <string name="uid_multi_user_scan_title">Çok Kullanıcılı Uygulama Taraması</string>
     <string name="uid_multi_user_scan_summary">Etkinleştirildiğinde, iş profilleri de dahil olmak üzere tüm kullanıcıların uygulamalarını tarar.</string>
     <string name="uid_scanner_setting_failed">Ayar başarısız oldu, lütfen izinleri kontrol edin</string>
-    <string name="uid_scanner_setting_error">Ayar başarısız oldu: %s</string>
     <string name="clean_runtime_environment">Çalışma Zamanı Ortamını Temizle</string>
     <string name="clean_runtime_environment_summary">Çalışma zamanı dosyalarını temizleyin ve tarayıcı hizmetini durdurun</string>
     <string name="clean_runtime_environment_confirm">Çalışma zamanı ortamını temizlemek istediğinizden emin misiniz? Bu işlem tarayıcı hizmetini durduracak ve ilgili dosyaları kaldıracaktır.</string>
@@ -703,9 +697,6 @@ etkin: Çekirdekteki AVC günlük kaydında, \'su\' komutuna ait tcontext\'i \'k
     <string name="log_viewer_clear_logs">Günlükleri Temizle</string>
     <string name="log_viewer_clear_logs_confirm">Seçili günlük dosyasını temizlemek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
     <string name="log_viewer_logs_cleared">Günlükler başarıyla temizlendi</string>
-    <string name="log_viewer_select_file">Günlük Dosyası Seç</string>
-    <string name="log_viewer_current_log">Mevcut Günlük</string>
-    <string name="log_viewer_old_log">Eski Günlük</string>
     <string name="log_viewer_filter_type">Türe Göre Filtrele</string>
     <string name="log_viewer_all_types">Tüm Türler</string>
     <string name="log_viewer_showing_entries">%2$d girişten %1$d tanesi gösteriliyor</string>

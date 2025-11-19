@@ -112,7 +112,6 @@
 \n続行しますか？</string>
     <string name="install_next">次へ</string>
     <string name="select_file_tip">%1$s のパーティションイメージを推奨します。</string>
-    <string name="select_file_tip_vendor">(不安定)</string>
     <string name="select_kmi">KMI を選択してください</string>
     <string name="settings_uninstall">アンインストール</string>
     <string name="settings_uninstall_temporary">一時的にアンインストールする</string>
@@ -127,7 +126,6 @@
     <string name="selected_lkm">選択された LKM: %s</string>
     <string name="save_log">ログを保存</string>
     <string name="log_saved">保存されたログ</string>
-    <string name="sus_su_mode">SuS SU モード:</string>
     <!-- Module related -->
     <string name="module_install_confirm">%1$s モジュールをインストールしますか？</string>
     <string name="unknown_module">不明なモジュール</string>
@@ -281,8 +279,6 @@
     <string name="advanced_settings">高度な設定</string>
     <string name="appearance_settings">ツールバーをカスタマイズ</string>
     <string name="back">戻る</string>
-    <string name="susfs_enabled">SuSFS 有効</string>
-    <string name="susfs_disabled">SuSFS 無効</string>
     <string name="background_set_success">背景の設定が成功しました</string>
     <string name="background_removed">カスタム背景を削除しました</string>
     <string name="icon_switch_title">代替アイコン</string>
@@ -597,7 +593,6 @@
     <string name="loop_paths_section">ループパス</string>
     <string name="add_loop_path">ループパスを追加</string>
     <!-- 循环路径功能描述 -->
-    <string name="sus_loop_path_feature_label">SUS ループパス</string>
     <string name="sus_loop_paths_description_title">ループパスの構成</string>
     <string name="sus_loop_paths_description_text">ループパスは、非 root ユーザーアプリまたは独立したサービスの起動ごとに SUS_PATH として再設定されます。これにより、追加されたパスの inode ステータスがリセットされたり、カーネル内で inode が再生成される問題に対処できます。</string>
     <string name="avc_log_spoofing">AVC ログの偽装</string>

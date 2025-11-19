@@ -113,7 +113,6 @@ Gunakan opsi ini hanya setelah OTA selesai.
 Lanjutkan?</string>
     <string name="install_next">Lanjut</string>
     <string name="select_file_tip">Disarankan gambar partisi %1$s</string>
-    <string name="select_file_tip_vendor">(tidak stabil)</string>
     <string name="select_kmi">Pilih KMI</string>
     <string name="settings_uninstall">Copot Pemasangan</string>
     <string name="settings_uninstall_temporary">Copot Pemasangan Sementara</string>
@@ -128,7 +127,6 @@ Lanjutkan?</string>
     <string name="selected_lkm">LKM Terpilih: %s</string>
     <string name="save_log">Simpan Log</string>
     <string name="log_saved">Log Disimpan</string>
-    <string name="sus_su_mode">Mode SuS SU:</string>
     <!-- Module related -->
     <string name="module_install_confirm">Konfirmasi pemasangan modul %1$s?</string>
     <string name="unknown_module">modul tidak dikenal</string>
@@ -283,8 +281,6 @@ Tanamkan: Secara permanen memasang ke sistem</string>
     <string name="advanced_settings">Pengaturan Lanjutan</string>
     <string name="appearance_settings">Sesuaikan Bilah Alat</string>
     <string name="back">Kembali</string>
-    <string name="susfs_enabled">SuSFS diaktifkan</string>
-    <string name="susfs_disabled">SuSFS dinonaktifkan</string>
     <string name="background_set_success">Latar belakang berhasil diatur</string>
     <string name="background_removed">Latar belakang khusus dihapus</string>
     <string name="icon_switch_title">Ikon Alternatif</string>

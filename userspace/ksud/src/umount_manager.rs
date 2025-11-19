@@ -13,7 +13,6 @@ const KSU_IOCTL_UMOUNT_MANAGER: u32 = 0xc0004b6b; // _IOC(_IOC_READ|_IOC_WRITE, 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct UmountEntry {
     pub path: String,
-    pub check_mnt: bool,
     pub flags: i32,
     pub is_default: bool,
 }
@@ -34,7 +33,6 @@ pub struct UmountManager {
 struct UmountManagerCmd {
     pub operation: u32,
     pub path: [u8; 256],
-    pub check_mnt: u8,
     pub flags: i32,
     pub count: u32,
     pub entries_ptr: u64,
@@ -45,7 +43,6 @@ impl Default for UmountManagerCmd {
         UmountManagerCmd {
             operation: 0,
             path: [0; 256],
-            check_mnt: 0,
             flags: 0,
             count: 0,
             entries_ptr: 0,
@@ -112,7 +109,7 @@ impl UmountManager {
         Ok(())
     }
 
-    pub fn add_entry(&mut self, path: &str, check_mnt: bool, flags: i32) -> Result<()> {
+    pub fn add_entry(&mut self, path: &str, flags: i32) -> Result<()> {
         let exists = self
             .defaults
             .iter()
@@ -126,7 +123,6 @@ impl UmountManager {
 
         let entry = UmountEntry {
             path: path.to_string(),
-            check_mnt,
             flags,
             is_default,
         };
@@ -165,43 +161,36 @@ impl UmountManager {
         vec![
             UmountEntry {
                 path: "/odm".to_string(),
-                check_mnt: true,
                 flags: 0,
                 is_default: true,
             },
             UmountEntry {
                 path: "/system".to_string(),
-                check_mnt: true,
                 flags: 0,
                 is_default: true,
             },
             UmountEntry {
                 path: "/vendor".to_string(),
-                check_mnt: true,
                 flags: 0,
                 is_default: true,
             },
             UmountEntry {
                 path: "/product".to_string(),
-                check_mnt: true,
                 flags: 0,
                 is_default: true,
             },
             UmountEntry {
                 path: "/system_ext".to_string(),
-                check_mnt: true,
                 flags: 0,
                 is_default: true,
             },
             UmountEntry {
                 path: "/data/adb/modules".to_string(),
-                check_mnt: false,
                 flags: -1, // MNT_DETACH
                 is_default: true,
             },
             UmountEntry {
                 path: "/debug_ramdisk".to_string(),
-                check_mnt: false,
                 flags: -1, // MNT_DETACH
                 is_default: true,
             },
@@ -226,7 +215,6 @@ impl UmountManager {
     fn kernel_add_entry(entry: &UmountEntry) -> Result<()> {
         let mut cmd = UmountManagerCmd {
             operation: 0,
-            check_mnt: entry.check_mnt as u8,
             flags: entry.flags,
             ..Default::default()
         };
@@ -255,9 +243,9 @@ pub fn init_umount_manager() -> Result<UmountManager> {
     Ok(manager)
 }
 
-pub fn add_umount_path(path: &str, check_mnt: bool, flags: i32) -> Result<()> {
+pub fn add_umount_path(path: &str, flags: i32) -> Result<()> {
     let mut manager = init_umount_manager()?;
-    manager.add_entry(path, check_mnt, flags)?;
+    manager.add_entry(path, flags)?;
     manager.save_config()?;
     println!("✓ Added umount path: {}", path);
     Ok(())
@@ -280,17 +268,13 @@ pub fn list_umount_paths() -> Result<()> {
         return Ok(());
     }
 
-    println!(
-        "{:<30} {:<12} {:<8} {:<10}",
-        "Path", "CheckMnt", "Flags", "Default"
-    );
+    println!("{:<30} {:<8} {:<10}", "Path", "Flags", "Default");
     println!("{}", "=".repeat(60));
 
     for entry in entries {
         println!(
-            "{:<30} {:<12} {:<8} {:<10}",
+            "{:<30} {:<8} {:<10}",
             entry.path,
-            entry.check_mnt,
             entry.flags,
             if entry.is_default { "Yes" } else { "No" }
         );

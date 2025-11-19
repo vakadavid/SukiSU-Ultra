@@ -124,7 +124,6 @@
     <string name="selected_lkm">LKM selecionado: %s</string>
     <string name="save_log">Salvar Registros</string>
     <string name="log_saved">Registros salvos</string>
-    <string name="sus_su_mode">Modo SU SuSU:</string>
     <!-- Module related -->
     <string name="module_install_confirm">¿confirmar la instalación del módulo %1$s?</string>
     <string name="unknown_module">módulo desconocido</string>
@@ -274,8 +273,6 @@
     <string name="advanced_settings">Configurações Avançadas</string>
     <string name="appearance_settings">Personaliza a barra de ferramentas.</string>
     <string name="back">Retorno</string>
-    <string name="susfs_enabled">SuSFS habilitado</string>
-    <string name="susfs_disabled">SuSFS desativado</string>
     <string name="background_set_success">Fundo definido com sucesso</string>
     <string name="background_removed">Remover</string>
     <string name="icon_switch_title">Ícone alternativo</string>

@@ -124,7 +124,6 @@
     <string name="selected_lkm">選擇嘅 LKM：%s</string>
     <string name="save_log">存儲日誌</string>
     <string name="log_saved">日誌已存儲</string>
-    <string name="sus_su_mode">SuS SU 模式：</string>
     <!-- Module related -->
     <string name="module_install_confirm">確認安裝模組 %1$s？</string>
     <string name="unknown_module">未知模組</string>
@@ -276,8 +275,6 @@
     <string name="advanced_settings">高級配置</string>
     <string name="appearance_settings">外觀配置</string>
     <string name="back">返回</string>
-    <string name="susfs_enabled">SuSFS 已啟用</string>
-    <string name="susfs_disabled">SuSFS 已禁用</string>
     <string name="background_set_success">背景設定成功</string>
     <string name="background_removed">已移除自定義背景</string>
     <string name="icon_switch_title">備選圖標</string>
@@ -576,7 +573,6 @@
     <string name="home_zygisk_implement">Zygisk 實現</string>
     <!-- 循环路径相关 -->
     <!-- 循环路径功能描述 -->
-    <string name="sus_loop_path_feature_label">SuS 循環路徑</string>
     <string name="sus_loop_paths_description_title">循環路徑配置</string>
     <string name="sus_loop_paths_description_text">循環路徑會喺每次非 root 用戶應用程式或者隔離服務啟動時，重新標記做 SUS_PATH。咁樣可以解決因為 inode 狀態重設或者核心重新建立 inode 而令到添加嘅路徑失效嘅問題。</string>
     <string name="avc_log_spoofing">AVC 日誌欺騙</string>
