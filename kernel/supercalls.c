@@ -38,6 +38,7 @@
 #ifdef CONFIG_KSU_SUSFS
 #include <linux/namei.h>
 #include <linux/susfs.h>
+#endif // #ifdef CONFIG_KSU_SUSFS
 
 bool susfs_is_boot_completed_triggered = false;
 
@@ -83,7 +84,6 @@ static void susfs_on_post_fs_data(void) {
 	pr_info("susfs_is_auto_add_try_umount_for_bind_mount_enabled: %d\n", susfs_is_auto_add_try_umount_for_bind_mount_enabled);
 #endif // #ifdef CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT
 }
-#endif // #ifdef CONFIG_KSU_SUSFS
 
 bool ksu_uid_scanner_enabled = false;
 
