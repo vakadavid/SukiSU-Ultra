@@ -18,7 +18,7 @@ config KSU_DEBUG
 config KSU_ALLOWLIST_WORKAROUND
 	bool "KernelSU Session Keyring Init workaround"
 	depends on KSU
-	default n
+	default y
 	help
 	  Enable session keyring init workaround for problematic devices.
 	  Useful for situations where the SU allowlist is not kept after a reboot
@@ -33,7 +33,7 @@ config KSU_MANUAL_SU
 config KSU_MULTI_MANAGER_SUPPORT
 	bool "Multi KernelSU manager support"
 	depends on KSU
-	default n
+	default y
 	help
 		Enable multi KernelSU manager support
 
@@ -42,7 +42,7 @@ config KPM
 	  depends on KSU && 64BIT
 	  select KALLSYMS
 	  select KALLSYMS_ALL
-	  default n
+	  default y
 	  help
 		Enabling this option will activate the KPM feature of SukiSU.
 		This option is suitable for scenarios where you need to force KPM to be enabled.
