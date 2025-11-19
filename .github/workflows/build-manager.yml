@@ -2,7 +2,7 @@ name: Build Manager
 
 on:
   push:
-    branches: [ "main", "dev", "ci" ]
+    branches: [ "main", "dev", "ci", "miuix" ]
     paths:
       - '.github/workflows/build-manager.yml'
       - '.github/workflows/build-lkm.yml'
@@ -11,13 +11,14 @@ on:
       - 'userspace/ksud/**'
       - 'userspace/user_scanner/**'
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev", "miuix" ]
     paths:
       - '.github/workflows/build-manager.yml'
       - '.github/workflows/build-lkm.yml'
       - 'manager/**'
       - 'kernel/**'
       - 'userspace/ksud/**'
+      - 'userspace/user_scanner/**'
   workflow_call:
 
 jobs:
