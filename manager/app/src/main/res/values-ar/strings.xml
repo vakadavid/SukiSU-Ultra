@@ -126,7 +126,6 @@
     <string name="selected_lkm">LKM المحددة: %s</string>
     <string name="save_log">حفظ السجلات</string>
     <string name="log_saved">السجلات محفوظة</string>
-    <string name="sus_su_mode">وضع SuS SU</string>
     <!-- Module related -->
     <string name="module_install_confirm">تأكيد وحدة التثبيت %1$s؟</string>
     <string name="unknown_module">وحدة غير معروفة</string>
@@ -276,8 +275,6 @@
     <string name="advanced_settings">إعدادات متقدمة</string>
     <string name="appearance_settings">تخصيص شريط الأدوات</string>
     <string name="back">عد مرة أخرى</string>
-    <string name="susfs_enabled">تم تمكين SuSFS</string>
-    <string name="susfs_disabled">تم تعطيل SuSFS</string>
     <string name="background_set_success">تم تعيين الخلفية بنجاح</string>
     <string name="background_removed">إزالة خلفيات مخصصة</string>
     <string name="icon_switch_title">Alternate icon</string>

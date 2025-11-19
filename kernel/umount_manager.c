@@ -17,7 +17,7 @@ static struct umount_manager g_umount_mgr = {
 
 static void try_umount_path(struct umount_entry *entry)
 {
-    try_umount(entry->path, entry->check_mnt, entry->flags);
+    try_umount(entry->path, entry->flags);
 }
 
 static struct umount_entry *find_entry_locked(const char *path)
@@ -39,21 +39,19 @@ static int init_default_entries(void)
 
     const struct {
         const char *path;
-        bool check_mnt;
         int flags;
     } defaults[] = {
-        { "/odm", true, 0 },
-        { "/system", true, 0 },
-        { "/vendor", true, 0 },
-        { "/product", true, 0 },
-        { "/system_ext", true, 0 },
-        { "/data/adb/modules", false, MNT_DETACH },
-        { "/debug_ramdisk", false, MNT_DETACH },
+        { "/odm", 0 },
+        { "/system", 0 },
+        { "/vendor", 0 },
+        { "/product", 0 },
+        { "/system_ext", 0 },
+        { "/data/adb/modules", MNT_DETACH },
+        { "/debug_ramdisk", MNT_DETACH },
     };
 
     for (int i = 0; i < ARRAY_SIZE(defaults); i++) {
-        ret = ksu_umount_manager_add(defaults[i].path, 
-                                     defaults[i].check_mnt,
+        ret = ksu_umount_manager_add(defaults[i].path,
                                      defaults[i].flags,
                                      true); // is_default = true
         if (ret) {
@@ -93,7 +91,7 @@ void ksu_umount_manager_exit(void)
     pr_info("Umount manager cleaned up\n");
 }
 
-int ksu_umount_manager_add(const char *path, bool check_mnt, int flags, bool is_default)
+int ksu_umount_manager_add(const char *path, int flags, bool is_default)
 {
     struct umount_entry *entry;
     unsigned long irqflags;
@@ -127,7 +125,6 @@ int ksu_umount_manager_add(const char *path, bool check_mnt, int flags, bool is_
     }
 
     strncpy(entry->path, path, sizeof(entry->path) - 1);
-    entry->check_mnt = check_mnt;
     entry->flags = flags;
     entry->state = UMOUNT_STATE_IDLE;
     entry->is_default = is_default;
@@ -234,7 +231,6 @@ int ksu_umount_manager_get_entries(struct ksu_umount_entry_info __user *entries,
 
         memset(&info, 0, sizeof(info));
         strncpy(info.path, entry->path, sizeof(info.path) - 1);
-        info.check_mnt = entry->check_mnt;
         info.flags = entry->flags;
         info.is_default = entry->is_default;
         info.state = entry->state;

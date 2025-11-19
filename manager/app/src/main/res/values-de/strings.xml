@@ -126,7 +126,6 @@
     <string name="selected_lkm">Wähle LKM: %s</string>
     <string name="save_log">Protokolle Speichern</string>
     <string name="log_saved">Protokolle gespeichert</string>
-    <string name="sus_su_mode">SuS SU-Modus:</string>
     <!-- Module related -->
     <string name="module_install_confirm">das Installationsmodul %1$s bestätigen ?</string>
     <string name="unknown_module">unbekannter Modul</string>
@@ -276,8 +275,6 @@
     <string name="advanced_settings">Erweiterte Einstellungen</string>
     <string name="appearance_settings">Passt die Symbolleiste an.</string>
     <string name="back">Comeback</string>
-    <string name="susfs_enabled">SuSFS aktiviert</string>
-    <string name="susfs_disabled">SuSFS deaktiviert</string>
     <string name="background_set_success">Hintergrund erfolgreich gesetzt</string>
     <string name="background_removed">Eigene Hintergründe entfernt</string>
     <string name="icon_switch_title">Alternatives Symbol</string>

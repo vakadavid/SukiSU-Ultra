@@ -115,7 +115,6 @@
     <string name="install_upload_lkm_file">Использовать локальный файл LKM</string>
     <string name="install_only_support_ko_file">Поддерживаются только файлы .ko</string>
     <string name="select_file_tip">Образ раздела %1$s рекомендуется</string>
-    <string name="select_file_tip_vendor">(нестабильный)</string>
     <string name="select_kmi">Выбрать KMI</string>
     <string name="settings_uninstall">Удалить</string>
     <string name="settings_uninstall_temporary">Удалить на время</string>
@@ -130,7 +129,6 @@
     <string name="selected_lkm">Выбран LKM: %s</string>
     <string name="save_log">Сохранить логи</string>
     <string name="log_saved">Логи сохранены</string>
-    <string name="sus_su_mode">SuS SU режим:</string>
     <!-- Module related -->
     <string name="module_install_confirm">подтвердите установку модуля %1$s?</string>
     <string name="unknown_module">неизвестный модуль</string>
@@ -291,8 +289,6 @@
     <string name="advanced_settings">Расширенные</string>
     <string name="appearance_settings">Внешний вид</string>
     <string name="back">Возвращение</string>
-    <string name="susfs_enabled">SuSFS включен</string>
-    <string name="susfs_disabled">SuSFS выключен</string>
     <string name="background_set_success">Фон успешно установлен</string>
     <string name="background_removed">Пользовательский фон удалён</string>
     <string name="icon_switch_title">Альт. иконка</string>
@@ -609,7 +605,6 @@
     <string name="loop_paths_section">Циклические пути</string>
     <string name="add_loop_path">Добавить циклический путь</string>
     <!-- 循环路径功能描述 -->
-    <string name="sus_loop_path_feature_label">Циклический путь SUS</string>
     <string name="sus_loop_paths_description_title">Конфигурация пути цикла</string>
     <string name="sus_loop_paths_description_text">Пути цикла повторно отмечены как SUS_PATH в каждом пользовательском приложении, не являющемся root, или изолированном запуске службы. Это помогает решить проблемы, в которых добавленные пути могут иметь сброс статуса inode или повторно созданные inode в ядре.</string>
     <string name="avc_log_spoofing">Спуф AVC лога</string>
@@ -662,7 +657,6 @@
     <string name="uid_multi_user_scan_title">Поиск многопользовательских приложений</string>
     <string name="uid_multi_user_scan_summary">Когда включено, сканирует приложения для всех пользователей, включая рабочие профили</string>
     <string name="uid_scanner_setting_failed">Не удалось установить, проверьте права доступа</string>
-    <string name="uid_scanner_setting_error">Не удалось установить: %s</string>
     <string name="clean_runtime_environment">Очистить среду Runtime</string>
     <string name="clean_runtime_environment_summary">Очистить среду Runtime и остановить службу сканирования</string>
     <string name="clean_runtime_environment_confirm">Вы уверены, что хотите очистить среду Runtime? Это остановит службу сканирования и удалит связанные с ней файлы.</string>
@@ -705,9 +699,6 @@
     <string name="log_viewer_clear_logs">Очистить логи</string>
     <string name="log_viewer_clear_logs_confirm">Вы уверены, что хотите удалить выбранный файл журнала? Это действие нельзя отменить.</string>
     <string name="log_viewer_logs_cleared">Логи успешно очищены</string>
-    <string name="log_viewer_select_file">Выберите файл журнала</string>
-    <string name="log_viewer_current_log">Текущий лог</string>
-    <string name="log_viewer_old_log">Старый лог</string>
     <string name="log_viewer_filter_type">Фильтрация по типу</string>
     <string name="log_viewer_all_types">Все типы</string>
     <string name="log_viewer_showing_entries">Показаны записи %1$d из %2$d</string>
@@ -735,8 +726,6 @@
     <string name="umount_path_restart_notice">Для применения изменений необходима перезагрузка. Система применит новый конфиг при следующем запуске.</string>
     <string name="add_umount_path">Добавить путь размонтирования</string>
     <string name="mount_path">Смонтировать путь</string>
-    <string name="check_mount_type">Проверить тип монтирования</string>
-    <string name="check_mount_type_overlay">Проверить, является ли оверлеем</string>
     <string name="umount_flags">Флаги размонтирования</string>
     <string name="umount_flags_hint">0=Обычное размонтирование, 8=MNT_DETACH, -1=Автоматически</string>
     <string name="flags">Флаги</string>

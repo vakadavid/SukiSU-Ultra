@@ -110,7 +110,6 @@
     <string name="install_inactive_slot_warning">Thiết bị của bạn sẽ **BUỘC** phải khởi động vào phân vùng chưa được sử dụng!\nChỉ sử dụng tùy chọn này sau khi cập nhật OTA hoàn tất.\nTiếp tục?</string>
     <string name="install_next">Kế tiếp</string>
     <string name="select_file_tip">Phân vùng %1$s được khuyến nghị</string>
-    <string name="select_file_tip_vendor">(Thử nghiệm)</string>
     <string name="select_kmi">Chọn KMI</string>
     <string name="settings_uninstall">Gỡ cài đặt</string>
     <string name="settings_uninstall_temporary">Gỡ cài đặt tạm thời</string>
@@ -125,7 +124,6 @@
     <string name="selected_lkm">Đã chọn LKM: %s</string>
     <string name="save_log">Lưu nhật ký</string>
     <string name="log_saved">Nhật ký đã được lưu</string>
-    <string name="sus_su_mode">Chế độ SuS SU:</string>
     <!-- Module related -->
     <string name="module_install_confirm">Xác nhận cài đặt module %1$s？</string>
     <string name="unknown_module">Module không xác định</string>
@@ -279,8 +277,6 @@
     <string name="advanced_settings">Cài đặt nâng cao</string>
     <string name="appearance_settings">Cài đặt giao diện</string>
     <string name="back">Trở lại</string>
-    <string name="susfs_enabled">SuSFS đã bật</string>
-    <string name="susfs_disabled">SuSFS đã tắt</string>
     <string name="background_set_success">Đã cài đặt hình nền thành công</string>
     <string name="background_removed">Đã xóa hình nền tùy chỉnh</string>
     <string name="icon_switch_title">Thay thế icon</string>
@@ -597,7 +593,6 @@
     <string name="loop_paths_section">Đường dẫn Vòng lặp</string>
     <string name="add_loop_path">Thêm Đường dẫn Vòng lặp</string>
     <!-- 循环路径功能描述 -->
-    <string name="sus_loop_path_feature_label">Đường dẫn Vòng lặp SuS</string>
     <string name="sus_loop_paths_description_title">Cấu hình Đường dẫn Vòng lặp</string>
     <string name="sus_loop_paths_description_text">Đường dẫn Vòng lặp được đổi tên thành SUS_PATH mỗi khi một ứng dụng không phải root hoặc dịch vụ cô lập được khởi động. Điều này giúp giải quyết vấn đề đường dẫn đã thêm có thể trở nên không hợp lệ do trạng thái inode được đặt lại hoặc inode được tạo lại trong Kernel</string>
     <string name="avc_log_spoofing">Giả mạo nhật ký AVC</string>
@@ -651,7 +646,6 @@ Bật: Kích hoạt tính năng giả mạo sus tcontext của \'su\' thành \'k
     <string name="uid_multi_user_scan_title">Quét ứng dụng nhiều người dùng</string>
     <string name="uid_multi_user_scan_summary">Khi được bật, tất cả ứng dụng của người dùng sẽ được quét, bao gồm cả dữ liệu công việc, v.v</string>
     <string name="uid_scanner_setting_failed">Thiết lập thất bại, vui lòng kiểm tra quyền</string>
-    <string name="uid_scanner_setting_error">Thiết lập thất bại: %s</string>
     <string name="clean_runtime_environment">Dọn dẹp môi trường hoạt động</string>
     <string name="clean_runtime_environment_summary">Dọn dẹp các file hoạt động và dừng quét các dịch vụ</string>
     <string name="clean_runtime_environment_confirm">Bạn có chắc chắn muốn dọn dẹp môi trường hoạt động không? Thao tác này sẽ dừng dịch vụ quét và xóa các file liên quan</string>
@@ -694,9 +688,6 @@ Bật: Kích hoạt tính năng giả mạo sus tcontext của \'su\' thành \'k
     <string name="log_viewer_clear_logs">Xoá nhật ký</string>
     <string name="log_viewer_clear_logs_confirm">Bạn có chắc chắn muốn xóa tệp nhật ký đã chọn không? Thao tác này không thể hoàn tác</string>
     <string name="log_viewer_logs_cleared">Đã xoá nhật ký thành công</string>
-    <string name="log_viewer_select_file">Chọn tệp nhật ký</string>
-    <string name="log_viewer_current_log">Nhật ký hiện tại</string>
-    <string name="log_viewer_old_log">Nhật ký cũ</string>
     <string name="log_viewer_filter_type">Lọc theo loại</string>
     <string name="log_viewer_all_types">Tất cả các loại</string>
     <string name="log_viewer_showing_entries">Hiển thị %1$d trong tổng %2$d nhật ký</string>

@@ -113,7 +113,6 @@
     <string name="install_upload_lkm_file">使用本地 LKM 文件</string>
     <string name="install_only_support_ko_file">仅支持选择 .ko 文件</string>
     <string name="select_file_tip">建议选择 %1$s 分区镜像</string>
-    <string name="select_file_tip_vendor">（实验性的）</string>
     <string name="select_kmi">选择 KMI</string>
     <string name="settings_uninstall">卸载</string>
     <string name="settings_uninstall_temporary">临时卸载</string>
@@ -128,7 +127,6 @@
     <string name="selected_lkm">已选择的 LKM：%s</string>
     <string name="save_log">保存日志</string>
     <string name="log_saved">日志已保存</string>
-    <string name="sus_su_mode">SuS SU 模式：</string>
     <!-- Module related -->
     <string name="module_install_confirm">确认安装模块 %1$s？</string>
     <string name="unknown_module">未知模块</string>
@@ -289,8 +287,6 @@
     <string name="advanced_settings">高级设置</string>
     <string name="appearance_settings">外观设置</string>
     <string name="back">返回</string>
-    <string name="susfs_enabled">SuSFS 已启用</string>
-    <string name="susfs_disabled">SuSFS 已禁用</string>
     <string name="background_set_success">背景设置成功</string>
     <string name="background_removed">已移除自定义背景</string>
     <string name="icon_switch_title">备选图标</string>
@@ -607,7 +603,6 @@
     <string name="loop_paths_section">循环路径</string>
     <string name="add_loop_path">添加循环路径</string>
     <!-- 循环路径功能描述 -->
-    <string name="sus_loop_path_feature_label">SuS 循环路径</string>
     <string name="sus_loop_paths_description_title">循环路径配置</string>
     <string name="sus_loop_paths_description_text">循环路径会在每次非 root 用户应用或隔离服务启动时重新标记为 SUS_PATH。这有助于解决添加的路径可能因 inode 状态重置或内核中 inode 重新创建而失效的问题</string>
     <string name="avc_log_spoofing">AVC 日志欺骗</string>
@@ -661,7 +656,6 @@
     <string name="uid_multi_user_scan_title">多用户应用扫描</string>
     <string name="uid_multi_user_scan_summary">开启后将扫描所有用户的应用，包括工作资料等</string>
     <string name="uid_scanner_setting_failed">设置失败，请检查权限</string>
-    <string name="uid_scanner_setting_error">设置失败: %s</string>
     <string name="clean_runtime_environment">清理运行环境</string>
     <string name="clean_runtime_environment_summary">清理运行时文件并停止扫描服务</string>
     <string name="clean_runtime_environment_confirm">您确定要清理运行环境吗？这将停止扫描服务并删除相关文件</string>
@@ -704,9 +698,6 @@
     <string name="log_viewer_clear_logs">清空日志</string>
     <string name="log_viewer_clear_logs_confirm">确定要清空选中的日志文件吗？此操作无法撤销。</string>
     <string name="log_viewer_logs_cleared">日志清空成功</string>
-    <string name="log_viewer_select_file">选择日志文件</string>
-    <string name="log_viewer_current_log">当前日志</string>
-    <string name="log_viewer_old_log">旧日志</string>
     <string name="log_viewer_filter_type">按类型筛选</string>
     <string name="log_viewer_all_types">所有类型</string>
     <string name="log_viewer_showing_entries">显示 %1$d / %2$d 条记录</string>
@@ -733,8 +724,6 @@
     <string name="umount_path_restart_notice">添加或删除路径后需要重启设备才能生效。系统会在下次启动时应用新的配置。</string>
     <string name="add_umount_path">添加 Umount 路径</string>
     <string name="mount_path">挂载路径</string>
-    <string name="check_mount_type">检查挂载类型</string>
-    <string name="check_mount_type_overlay">检查是否为 overlay 类型</string>
     <string name="umount_flags">卸载标志</string>
     <string name="umount_flags_hint">0=正常卸载, 8=MNT_DETACH, -1=自动</string>
     <string name="flags">标志</string>
