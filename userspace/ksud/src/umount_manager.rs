@@ -25,7 +25,6 @@ pub struct UmountConfig {
 pub struct UmountManager {
     config: UmountConfig,
     config_path: PathBuf,
-    defaults: Vec<UmountEntry>,
 }
 
 #[repr(C)]
@@ -65,7 +64,6 @@ impl UmountManager {
         Ok(UmountManager {
             config,
             config_path: path,
-            defaults: Vec::new(),
         })
     }
 
@@ -110,21 +108,15 @@ impl UmountManager {
     }
 
     pub fn add_entry(&mut self, path: &str, flags: i32) -> Result<()> {
-        let exists = self
-            .defaults
-            .iter()
-            .chain(&self.config.entries)
-            .any(|e| e.path == path);
+        let exists = self.config.entries.iter().any(|e| e.path == path);
         if exists {
             return Err(anyhow!("Entry already exists: {}", path));
         }
 
-        let is_default = Self::get_default_paths().iter().any(|e| e.path == path);
-
         let entry = UmountEntry {
             path: path.to_string(),
             flags,
-            is_default,
+            is_default: false,
         };
 
         self.config.entries.push(entry);
@@ -132,24 +124,17 @@ impl UmountManager {
     }
 
     pub fn remove_entry(&mut self, path: &str) -> Result<()> {
-        let entry = self.config.entries.iter().find(|e| e.path == path);
+        let before = self.config.entries.len();
+        self.config.entries.retain(|e| e.path != path);
 
-        if let Some(entry) = entry {
-            if entry.is_default {
-                return Err(anyhow!("Cannot remove default entry: {}", path));
-            }
-        } else {
+        if before == self.config.entries.len() {
             return Err(anyhow!("Entry not found: {}", path));
         }
-
-        self.config.entries.retain(|e| e.path != path);
         Ok(())
     }
 
     pub fn list_entries(&self) -> Vec<UmountEntry> {
-        let mut all = self.defaults.clone();
-        all.extend(self.config.entries.iter().cloned());
-        all
+        self.config.entries.clone()
     }
 
     pub fn clear_custom_entries(&mut self) -> Result<()> {
@@ -157,55 +142,7 @@ impl UmountManager {
         Ok(())
     }
 
-    pub fn get_default_paths() -> Vec<UmountEntry> {
-        vec![
-            UmountEntry {
-                path: "/odm".to_string(),
-                flags: 0,
-                is_default: true,
-            },
-            UmountEntry {
-                path: "/system".to_string(),
-                flags: 0,
-                is_default: true,
-            },
-            UmountEntry {
-                path: "/vendor".to_string(),
-                flags: 0,
-                is_default: true,
-            },
-            UmountEntry {
-                path: "/product".to_string(),
-                flags: 0,
-                is_default: true,
-            },
-            UmountEntry {
-                path: "/system_ext".to_string(),
-                flags: 0,
-                is_default: true,
-            },
-            UmountEntry {
-                path: "/data/adb/modules".to_string(),
-                flags: -1, // MNT_DETACH
-                is_default: true,
-            },
-            UmountEntry {
-                path: "/debug_ramdisk".to_string(),
-                flags: -1, // MNT_DETACH
-                is_default: true,
-            },
-        ]
-    }
-
-    pub fn init_defaults(&mut self) -> Result<()> {
-        self.defaults = Self::get_default_paths();
-        Ok(())
-    }
-
     pub fn apply_to_kernel(&self) -> Result<()> {
-        for entry in &self.defaults {
-            let _ = Self::kernel_add_entry(entry);
-        }
         for entry in &self.config.entries {
             Self::kernel_add_entry(entry)?;
         }
@@ -233,8 +170,7 @@ impl UmountManager {
 }
 
 pub fn init_umount_manager() -> Result<UmountManager> {
-    let mut manager = UmountManager::new(None)?;
-    manager.init_defaults()?;
+    let manager = UmountManager::new(None)?;
 
     if !Path::new(CONFIG_FILE).exists() {
         manager.save_config()?;

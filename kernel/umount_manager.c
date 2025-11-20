@@ -33,44 +33,12 @@ static struct umount_entry *find_entry_locked(const char *path)
     return NULL;
 }
 
-static int init_default_entries(void)
-{
-    int ret;
-
-    const struct {
-        const char *path;
-        int flags;
-    } defaults[] = {
-        { "/odm", 0 },
-        { "/system", 0 },
-        { "/vendor", 0 },
-        { "/product", 0 },
-        { "/system_ext", 0 },
-        { "/data/adb/modules", MNT_DETACH },
-        { "/debug_ramdisk", MNT_DETACH },
-    };
-
-    for (int i = 0; i < ARRAY_SIZE(defaults); i++) {
-        ret = ksu_umount_manager_add(defaults[i].path,
-                                     defaults[i].flags,
-                                     true); // is_default = true
-        if (ret) {
-            pr_err("Failed to add default entry: %s, ret=%d\n",
-                   defaults[i].path, ret);
-            return ret;
-        }
-    }
-
-    pr_info("Initialized %zu default umount entries\n", ARRAY_SIZE(defaults));
-    return 0;
-}
-
 int ksu_umount_manager_init(void)
 {
     INIT_LIST_HEAD(&g_umount_mgr.entry_list);
     spin_lock_init(&g_umount_mgr.lock);
 
-    return init_default_entries();
+    return 0;
 }
 
 void ksu_umount_manager_exit(void)

@@ -865,7 +865,7 @@ private fun ModuleList(
                     ModuleOperationUtils.handleModuleUninstall(module.dirId)
                     uninstallModule(module.dirId)
                 } else {
-                    restoreModule(module.dirId)
+                    undoUninstallModule(module.dirId)
                 }
             }
         }

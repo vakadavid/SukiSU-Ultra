@@ -143,15 +143,15 @@ class ModuleViewModel : ViewModel() {
                             obj.optString("name"),
                             obj.optString("author", "Unknown"),
                             obj.optString("version", "Unknown"),
-                            obj.optInt("versionCode", 0),
+                            obj.getIntCompat("versionCode", 0),
                             obj.optString("description"),
-                            obj.getBoolean("enabled"),
-                            obj.getBoolean("update"),
-                            obj.getBoolean("remove"),
+                            obj.getBooleanCompat("enabled"),
+                            obj.getBooleanCompat("update"),
+                            obj.getBooleanCompat("remove"),
                             obj.optString("updateJson"),
-                            obj.optBoolean("web"),
-                            obj.optBoolean("action"),
-                            obj.getString("dir_id")
+                            obj.getBooleanCompat("web"),
+                            obj.getBooleanCompat("action"),
+                            obj.optString("dir_id", obj.getString("id"))
                         )
                     }.toList()
 
@@ -466,6 +466,26 @@ class ModuleSizeCache(context: Context) {
             Log.e(TAG, "计算模块大小失败 $dirId: ${e.message}")
             0L
         }
+    }
+}
+
+private fun JSONObject.getBooleanCompat(key: String, default: Boolean = false): Boolean {
+    if (!has(key)) return default
+    return when (val value = opt(key)) {
+        is Boolean -> value
+        is String -> value.equals("true", ignoreCase = true) || value == "1"
+        is Number -> value.toInt() != 0
+        else -> default
+    }
+}
+
+private fun JSONObject.getIntCompat(key: String, default: Int = 0): Int {
+    if (!has(key)) return default
+    return when (val value = opt(key)) {
+        is Int -> value
+        is Number -> value.toInt()
+        is String -> value.toIntOrNull() ?: default
+        else -> default
     }
 }
 

@@ -9,13 +9,14 @@ mod init_event;
 #[cfg(target_arch = "aarch64")]
 mod kpm;
 mod ksucalls;
-#[cfg(target_os = "android")]
-mod magic_mount;
+mod metamodule;
 mod module;
+mod module_config;
 mod profile;
 mod restorecon;
 mod sepolicy;
 mod su;
+#[cfg(target_os = "android")]
 mod uid_scanner;
 mod umount_manager;
 mod utils;
