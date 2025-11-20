@@ -26,6 +26,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import com.sukisu.zako.IKsuInterface
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -59,7 +61,8 @@ class SuperUserViewModel : ViewModel() {
         private const val TAG = "SuperUserViewModel"
         private val appsLock = Any()
         var apps by mutableStateOf<List<AppInfo>>(emptyList())
-        var appGroups by mutableStateOf<List<AppGroup>>(emptyList())
+        private val _isAppListLoaded = MutableStateFlow(false)
+        val isAppListLoaded = _isAppListLoaded.asStateFlow()
 
         @JvmStatic
         fun getAppIconDrawable(context: Context, packageName: String): Drawable? {
@@ -67,6 +70,8 @@ class SuperUserViewModel : ViewModel() {
             return appList.find { it.packageName == packageName }
                 ?.packageInfo?.applicationInfo?.loadIcon(context.packageManager)
         }
+
+        var appGroups by mutableStateOf<List<AppGroup>>(emptyList())
 
         private const val PREFS_NAME = "settings"
         private const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
@@ -336,6 +341,10 @@ class SuperUserViewModel : ViewModel() {
             }
 
             stopKsuService()
+
+            synchronized(appsLock) {
+                _isAppListLoaded.value = true
+            }
 
             appListMutex.withLock {
                 val filteredApps = result.filter { it.packageName != ksuApp.packageName }

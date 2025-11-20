@@ -866,12 +866,9 @@ object SuSFSManager {
             "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG" to context.getString(R.string.spoof_cmdline_feature_label),
             "CONFIG_KSU_SUSFS_OPEN_REDIRECT" to context.getString(R.string.open_redirect_feature_label),
             "CONFIG_KSU_SUSFS_ENABLE_LOG" to context.getString(R.string.enable_log_feature_label),
-            "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT" to context.getString(R.string.auto_default_mount_feature_label),
-            "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT" to context.getString(R.string.auto_bind_mount_feature_label),
             "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT" to context.getString(R.string.auto_try_umount_bind_feature_label),
             "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS" to context.getString(R.string.hide_symbols_feature_label),
             "CONFIG_KSU_SUSFS_SUS_KSTAT" to context.getString(R.string.sus_kstat_feature_label),
-            "CONFIG_KSU_SUSFS_SUS_SU" to context.getString(R.string.sus_su_feature_label)
         )
 
 
@@ -899,12 +896,9 @@ object SuSFSManager {
             "spoof_cmdline_feature_label" to context.getString(R.string.spoof_cmdline_feature_label),
             "open_redirect_feature_label" to context.getString(R.string.open_redirect_feature_label),
             "enable_log_feature_label" to context.getString(R.string.enable_log_feature_label),
-            "auto_default_mount_feature_label" to context.getString(R.string.auto_default_mount_feature_label),
-            "auto_bind_mount_feature_label" to context.getString(R.string.auto_bind_mount_feature_label),
             "auto_try_umount_bind_feature_label" to context.getString(R.string.auto_try_umount_bind_feature_label),
             "hide_symbols_feature_label" to context.getString(R.string.hide_symbols_feature_label),
             "sus_kstat_feature_label" to context.getString(R.string.sus_kstat_feature_label),
-            "sus_su_feature_label" to context.getString(R.string.sus_su_feature_label)
         )
 
         return defaultFeatures.map { (_, displayName) ->

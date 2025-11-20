@@ -2,32 +2,38 @@ package com.sukisu.ultra.ui.webui
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.ViewGroup.MarginLayoutParams
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.webkit.WebViewAssetLoader
 import com.dergoogler.mmrl.platform.model.ModId
 import com.dergoogler.mmrl.webui.interfaces.WXOptions
 import com.sukisu.ultra.ui.util.createRootShell
 import com.sukisu.ultra.ui.viewmodel.SuperUserViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 
 @SuppressLint("SetJavaScriptEnabled")
 class WebUIActivity : ComponentActivity() {
     private val rootShell by lazy { createRootShell(true) }
-    private val superUserViewModel: SuperUserViewModel by viewModels()
+
+    private lateinit var insets: Insets
     private var webView = null as WebView?
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +46,21 @@ class WebUIActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            superUserViewModel.fetchAppList()
+        setContent {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
 
+        lifecycleScope.launch {
+            SuperUserViewModel.isAppListLoaded.first { it }
+            setupWebView()
+        }
+    }
+    private fun setupWebView() {
         val moduleId = intent.getStringExtra("id") ?: finishAndRemoveTask().let { return }
         val name = intent.getStringExtra("name") ?: finishAndRemoveTask().let { return }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -60,11 +77,12 @@ class WebUIActivity : ComponentActivity() {
 
         val moduleDir = "/data/adb/modules/${moduleId}"
         val webRoot = File("${moduleDir}/webroot")
+        insets = Insets(0, 0, 0, 0)
         val webViewAssetLoader = WebViewAssetLoader.Builder()
             .setDomain("mui.kernelsu.org")
             .addPathHandler(
                 "/",
-                SuFilePathHandler(webRoot, rootShell)
+                SuFilePathHandler(webRoot, rootShell) { insets }
             )
             .build()
 
@@ -94,15 +112,18 @@ class WebUIActivity : ComponentActivity() {
         val webView = WebView(this).apply {
             webView = this
 
-            ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
-                val inset = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                view.updateLayoutParams<MarginLayoutParams> {
-                    leftMargin = inset.left
-                    rightMargin = inset.right
-                    topMargin = inset.top
-                    bottomMargin = inset.bottom
-                }
-                return@setOnApplyWindowInsetsListener insets
+            setBackgroundColor(Color.TRANSPARENT)
+            val density = resources.displayMetrics.density
+
+            ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
+                val inset = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+                insets = Insets(
+                    top = (inset.top / density).toInt(),
+                    bottom = (inset.bottom / density).toInt(),
+                    left = (inset.left / density).toInt(),
+                    right = (inset.right / density).toInt()
+                )
+                WindowInsetsCompat.CONSUMED
             }
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
