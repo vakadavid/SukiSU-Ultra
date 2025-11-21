@@ -170,6 +170,9 @@ endif
 ifeq ($(shell grep -A1 "^int vfs_getattr" $(srctree)/fs/stat.c | grep -q "query_flags"; echo $$?),0)
 ccflags-y += -DKSU_HAS_NEW_VFS_GETATTR
 endif
+ifeq ($(shell grep -q "anon_inode_getfd_secure" $(srctree)/fs/anon_inodes.c; echo $$?),0)
+ccflags-y += -DKSU_HAS_GETFD_SECURE
+endif
 
 # Checks Samsung
 ifeq ($(shell grep -q "CONFIG_KDP_CRED" $(srctree)/kernel/cred.c; echo $$?),0)
