@@ -19,8 +19,10 @@ import kotlinx.parcelize.Parcelize
 import com.sukisu.ultra.BuildConfig
 import com.sukisu.ultra.Natives
 import com.sukisu.ultra.ksuApp
+import com.topjohnwu.superuser.io.SuFile
 import org.json.JSONArray
 import java.io.File
+import java.util.Properties
 
 
 /**
@@ -97,6 +99,13 @@ fun execKsud(args: String, newShell: Boolean = false): Boolean {
     }
 }
 
+suspend fun getFeatureStatus(feature: String): String = withContext(Dispatchers.IO) {
+    val shell = getRootShell()
+    val out = shell.newJob()
+        .add("${getKsuDaemonPath()} feature check $feature").to(ArrayList<String>(), null).exec().out
+    out.firstOrNull()?.trim().orEmpty()
+}
+
 fun install() {
     val start = SystemClock.elapsedRealtime()
     val magiskboot = File(ksuApp.applicationInfo.nativeLibraryDir, "libmagiskboot.so").absolutePath
@@ -104,11 +113,15 @@ fun install() {
     Log.w(TAG, "install result: $result, cost: ${SystemClock.elapsedRealtime() - start}ms")
 }
 
+fun hasMetaModule(): Boolean {
+    return getMetaModuleImplement() != "None"
+}
+
 fun listModules(): String {
     val shell = getRootShell()
 
-    val out =
-        shell.newJob().add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec().out
+    val out = shell.newJob()
+        .add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec().out
     return out.joinToString("\n").ifBlank { "[]" }
 }
 
@@ -146,6 +159,13 @@ fun restoreModule(id: String): Boolean {
     val cmd = "module restore $id"
     val result = execKsud(cmd, true)
     Log.i(TAG, "restore module $id result: $result")
+    return result
+}
+
+fun undoUninstallModule(id: String): Boolean {
+    val cmd = "module undo-uninstall $id"
+    val result = execKsud(cmd, true)
+    Log.i(TAG, "undo uninstall module $id result: $result")
     return result
 }
 
@@ -561,9 +581,27 @@ fun getSuSFSFeatures(): String {
     return runCmd(shell, cmd)
 }
 
-fun getZygiskImplement(): String {
-    val shell = getRootShell()
+fun getMetaModuleImplement(): String {
+    try {
+        val metaModuleProp = SuFile.open("/data/adb/metamodule/module.prop")
+        if (!metaModuleProp.isFile) {
+            Log.i(TAG, "Meta module implement: None")
+            return "None"
+        }
 
+        val prop = Properties()
+        prop.load(metaModuleProp.newInputStream())
+
+        val name = prop.getProperty("name")
+        Log.i(TAG, "Meta module implement: $name")
+        return name
+    } catch (t : Throwable) {
+        Log.i(TAG, "Meta module implement: None")
+        return "None"
+    }
+}
+
+fun getZygiskImplement(): String {
     val zygiskModuleIds = listOf(
         "zygisksu",
         "rezygisk",
@@ -571,14 +609,19 @@ fun getZygiskImplement(): String {
     )
 
     for (moduleId in zygiskModuleIds) {
-        val modulePath = "/data/adb/modules/$moduleId"
-        when {
-            ShellUtils.fastCmdResult(shell, "test -f $modulePath/module.prop && test ! -f $modulePath/disable") -> {
-                val result = ShellUtils.fastCmd(shell, "grep '^name=' $modulePath/module.prop | cut -d'=' -f2")
-                Log.i(TAG, "Zygisk implement: $result")
-                return result
-            }
-        }
+        // 忽略禁用/即将删除
+        if (SuFile.open("/data/adb/modules/$moduleId/disable").isFile || SuFile.open("/data/adb/modules/$moduleId/remove").isFile) continue
+
+        // 读取prop
+        val propFile = SuFile.open("/data/adb/modules/$moduleId/module.prop")
+        if (!propFile.isFile) continue
+
+        val prop = Properties()
+        prop.load(propFile.newInputStream())
+
+        val name = prop.getProperty("name")
+        Log.i(TAG, "Zygisk implement: $name")
+        return name
     }
 
     Log.i(TAG, "Zygisk implement: None")

@@ -1,24 +1,27 @@
-#[cfg(unix)]
-use std::os::unix::prelude::PermissionsExt;
+use anyhow::{Context, Error, Ok, Result, bail};
 use std::{
-    fs::{self, File, OpenOptions, create_dir_all, remove_file, write},
-    fs::{Permissions, set_permissions},
+    fs::{File, OpenOptions, create_dir_all, remove_file, write},
     io::{
         ErrorKind::{AlreadyExists, NotFound},
         Write,
     },
-    path::{Path, PathBuf},
+    path::Path,
     process::Command,
 };
 
-use anyhow::{Context, Error, Ok, Result, bail};
+use crate::{assets, boot_patch, defs, ksucalls, module, restorecon};
+#[allow(unused_imports)]
+use std::fs::{Permissions, set_permissions};
+#[cfg(unix)]
+use std::os::unix::prelude::PermissionsExt;
+
+use std::path::PathBuf;
+
 #[cfg(any(target_os = "linux", target_os = "android"))]
 use rustix::{
     process,
     thread::{LinkNameSpaceType, move_into_link_name_space},
 };
-
-use crate::{assets, boot_patch, defs, ksucalls, module, restorecon};
 
 pub fn ensure_clean_dir(dir: impl AsRef<Path>) -> Result<()> {
     let path = dir.as_ref();
@@ -32,7 +35,7 @@ pub fn ensure_clean_dir(dir: impl AsRef<Path>) -> Result<()> {
 
 pub fn ensure_file_exists<T: AsRef<Path>>(file: T) -> Result<()> {
     match File::options().write(true).create_new(true).open(&file) {
-        Result::Ok(_) => Ok(()),
+        std::result::Result::Ok(_) => Ok(()),
         Err(err) => {
             if err.kind() == AlreadyExists && file.as_ref().is_file() {
                 Ok(())
@@ -170,27 +173,6 @@ pub fn umask(_mask: u32) {
 
 pub fn has_magisk() -> bool {
     which::which("magisk").is_ok()
-}
-
-fn is_ok_empty(dir: &str) -> bool {
-    use std::result::Result::Ok;
-
-    match fs::read_dir(dir) {
-        Ok(mut entries) => entries.next().is_none(),
-        Err(_) => false,
-    }
-}
-
-pub fn find_tmp_path() -> String {
-    let dirs = ["/debug_ramdisk", "/patch_hw", "/oem", "/root", "/sbin"];
-
-    // find empty directory
-    for dir in dirs {
-        if is_ok_empty(dir) {
-            return dir.to_string();
-        }
-    }
-    "".to_string()
 }
 
 #[cfg(target_os = "android")]

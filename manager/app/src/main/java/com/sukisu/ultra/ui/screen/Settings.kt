@@ -11,12 +11,10 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.EnhancedEncryption
@@ -56,7 +54,6 @@ import com.sukisu.ultra.ui.theme.CardConfig.cardAlpha
 import com.sukisu.ultra.ui.theme.getCardColors
 import com.sukisu.ultra.ui.theme.getCardElevation
 import com.sukisu.ultra.ui.util.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -151,11 +148,28 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 }
                             )
                         }
+                        val enhancedStatus by produceState(initialValue = "") {
+                            value = getFeatureStatus("enhanced_security")
+                        }
+                        val enhancedSummary = when (enhancedStatus) {
+                            "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                            "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                            else -> stringResource(id = R.string.settings_enable_enhanced_security_summary)
+                        }
                         SuperDropdown(
                             icon = Icons.Rounded.EnhancedEncryption,
                             title = stringResource(id = R.string.settings_enable_enhanced_security),
-                            summary = stringResource(id = R.string.settings_enable_enhanced_security_summary),
+                            summary = enhancedSummary,
                             items = modeItems,
+                            leftAction = {
+                                Icon(
+                                    Icons.Rounded.EnhancedEncryption,
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    contentDescription = stringResource(id = R.string.settings_enable_enhanced_security),
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            },
+                            enabled = enhancedStatus == "supported",
                             selectedIndex = enhancedSecurityMode,
                             onSelectedIndexChange = { index ->
                                 when (index) {
@@ -194,11 +208,28 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 }
                             )
                         }
+                        val suStatus by produceState(initialValue = "") {
+                            value = getFeatureStatus("su_compat")
+                        }
+                        val suSummary = when (suStatus) {
+                            "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                            "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                            else -> stringResource(id = R.string.settings_disable_su_summary)
+                        }
                         SuperDropdown(
                             icon = Icons.Rounded.RemoveModerator,
                             title = stringResource(id = R.string.settings_disable_su),
-                            summary = stringResource(id = R.string.settings_disable_su_summary),
+                            summary = suSummary,
                             items = modeItems,
+                            leftAction = {
+                                Icon(
+                                    Icons.Rounded.RemoveModerator,
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    contentDescription = stringResource(id = R.string.settings_disable_su),
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            },
+                            enabled = suStatus == "supported",
                             selectedIndex = suCompatMode,
                             onSelectedIndexChange = { index ->
                                 when (index) {
@@ -237,11 +268,28 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                 }
                             )
                         }
+                        val umountStatus by produceState(initialValue = "") {
+                            value = getFeatureStatus("kernel_umount")
+                        }
+                        val umountSummary = when (umountStatus) {
+                            "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                            "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                            else -> stringResource(id = R.string.settings_disable_kernel_umount_summary)
+                        }
                         SuperDropdown(
                             icon = Icons.Rounded.RemoveCircle,
                             title = stringResource(id = R.string.settings_disable_kernel_umount),
-                            summary = stringResource(id = R.string.settings_disable_kernel_umount_summary),
+                            summary = umountSummary,
                             items = modeItems,
+                            leftAction = {
+                                Icon(
+                                    Icons.Rounded.RemoveCircle,
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    contentDescription = stringResource(id = R.string.settings_disable_kernel_umount),
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            },
+                            enabled = umountStatus == "supported",
                             selectedIndex = kernelUmountMode,
                             onSelectedIndexChange = { index ->
                                 when (index) {
@@ -271,28 +319,44 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                             }
                         )
 
-                        var kernelSuLogMode by rememberSaveable {
+                        var suLogMode by rememberSaveable {
                             mutableIntStateOf(
                                 run {
                                     val currentEnabled = Natives.isSuLogEnabled()
-                                    val savedPersist = prefs.getInt("kernel_sulog_mode", 0)
+                                    val savedPersist = prefs.getInt("sulog_mode", 0)
                                     if (savedPersist == 2) 2 else if (!currentEnabled) 1 else 0
                                 }
                             )
                         }
+                        val suLogStatus by produceState(initialValue = "") {
+                            value = getFeatureStatus("sulog")
+                        }
+                        val suLogSummary = when (suLogStatus) {
+                            "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                            "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                            else -> stringResource(id = R.string.settings_disable_sulog_summary)
+                        }
                         SuperDropdown(
-                            icon = Icons.Filled.NoAccounts,
                             title = stringResource(id = R.string.settings_disable_sulog),
-                            summary = stringResource(id = R.string.settings_disable_sulog_summary),
+                            summary = suLogSummary,
                             items = modeItems,
-                            selectedIndex = kernelSuLogMode,
+                            leftAction = {
+                                Icon(
+                                    Icons.Rounded.RemoveCircle,
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    contentDescription = stringResource(id = R.string.settings_disable_sulog),
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            },
+                            enabled = suLogStatus == "supported",
+                            selectedIndex = suLogMode,
                             onSelectedIndexChange = { index ->
                                 when (index) {
                                     // Default: enable and save to persist
                                     0 -> if (Natives.setSuLogEnabled(true)) {
                                         execKsud("feature save", true)
-                                        prefs.edit { putInt("kernel_sulog_mode", 0) }
-                                        kernelSuLogMode = 0
+                                        prefs.edit { putInt("sulog_mode", 0) }
+                                        suLogMode = 0
                                         isSuLogEnabled = true
                                     }
 
@@ -300,8 +364,8 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                     1 -> if (Natives.setSuLogEnabled(true)) {
                                         execKsud("feature save", true)
                                         if (Natives.setSuLogEnabled(false)) {
-                                            prefs.edit { putInt("kernel_sulog_mode", 0) }
-                                            kernelSuLogMode = 1
+                                            prefs.edit { putInt("sulog_mode", 0) }
+                                            suLogMode = 1
                                             isSuLogEnabled = false
                                         }
                                     }
@@ -309,8 +373,8 @@ fun SettingScreen(navigator: DestinationsNavigator) {
                                     // Permanently disable: disable and save
                                     2 -> if (Natives.setSuLogEnabled(false)) {
                                         execKsud("feature save", true)
-                                        prefs.edit { putInt("kernel_sulog_mode", 2) }
-                                        kernelSuLogMode = 2
+                                        prefs.edit { putInt("sulog_mode", 2) }
+                                        suLogMode = 2
                                         isSuLogEnabled = false
                                     }
                                 }
