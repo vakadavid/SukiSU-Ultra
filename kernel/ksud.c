@@ -332,7 +332,11 @@ int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
 		rcu_read_lock();
 		init_task = rcu_dereference(current->real_parent);
 		if (init_task) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
 			task_work_add(init_task, &on_post_fs_data_cb, TWA_RESUME);
+#else
+            task_work_add(init_task, &on_post_fs_data_cb, true);
+#endif
 		}
 		rcu_read_unlock();
 
