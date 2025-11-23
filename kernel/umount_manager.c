@@ -12,7 +12,7 @@
 
 static struct umount_manager g_umount_mgr = {
     .entry_count = 0,
-    .max_entries = 64,
+    .max_entries = MAX_PATHS,
 };
 
 static void try_umount_path(struct umount_entry *entry)
@@ -150,15 +150,33 @@ out:
     return ret;
 }
 
-void ksu_umount_manager_execute_all(const struct cred *cred)
+static bool is_path_excluded(const char *path, const char **exclude_paths, u32 exclude_count)
+{
+    u32 i;
+    if (!exclude_paths || exclude_count == 0)
+        return false;
+    
+    for (i = 0; i < exclude_count; i++) {
+        if (exclude_paths[i] && strcmp(path, exclude_paths[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void ksu_umount_manager_execute_all(const struct cred *cred, 
+                                    const char **exclude_paths, 
+                                    u32 exclude_count)
 {
     struct umount_entry *entry;
     unsigned long flags;
+    u32 processed_count = 0;
 
     spin_lock_irqsave(&g_umount_mgr.lock, flags);
 
     list_for_each_entry(entry, &g_umount_mgr.entry_list, list) {
-        if (entry->state == UMOUNT_STATE_IDLE) {
+        if (entry->state == UMOUNT_STATE_IDLE && 
+            !is_path_excluded(entry->path, exclude_paths, exclude_count)) {
             entry->ref_count++;
         }
     }
@@ -167,7 +185,12 @@ void ksu_umount_manager_execute_all(const struct cred *cred)
 
     list_for_each_entry(entry, &g_umount_mgr.entry_list, list) {
         if (entry->ref_count > 0 && entry->state == UMOUNT_STATE_IDLE) {
-            try_umount_path(entry);
+            if (!is_path_excluded(entry->path, exclude_paths, exclude_count)) {
+                pr_info("umount_manager: Unmounting path: %s (flags: 0x%x)\n", 
+                        entry->path, entry->flags);
+                try_umount_path(entry);
+                processed_count++;
+            }
         }
     }
 

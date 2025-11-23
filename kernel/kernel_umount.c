@@ -1,5 +1,6 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
+#include <linux/string.h>
 #include <linux/task_work.h>
 #include <linux/version.h>
 #include <linux/cred.h>
@@ -117,6 +118,9 @@ static void umount_tw_func(struct callback_head *cb)
 {
 	struct umount_tw *tw = container_of(cb, struct umount_tw, cb);
 	const struct cred *saved = NULL;
+	const char *exclude_paths[MAX_PATHS];
+	u32 exclude_count = 0;
+
 	if (tw->old_cred) {
 		saved = override_creds(tw->old_cred);
 	}
@@ -124,12 +128,28 @@ static void umount_tw_func(struct callback_head *cb)
 	struct mount_entry *entry;
 	down_read(&mount_list_lock);
 	list_for_each_entry(entry, &mount_list, list) {
+		// Check for duplicates
+		bool is_duplicate = false;
+		u32 i;
+		for (i = 0; i < exclude_count; i++) {
+			if (exclude_paths[i] && !strcmp(exclude_paths[i], entry->umountable)) {
+				is_duplicate = true;
+				break;
+			}
+		}
+		
+		// Add to exclude list if not duplicate and not full
+		if (!is_duplicate && exclude_count < MAX_PATHS) {
+			exclude_paths[exclude_count] = entry->umountable;
+			exclude_count++;
+		}
+		
 		pr_info("%s: unmounting: %s flags 0x%x\n", __func__, entry->umountable, entry->flags);
 		try_umount(entry->umountable, entry->flags);
 	}
 	up_read(&mount_list_lock);
 
-	ksu_umount_manager_execute_all(tw->old_cred);
+	ksu_umount_manager_execute_all(tw->old_cred, exclude_paths, exclude_count);
 
 	if (saved)
 		revert_creds(saved);

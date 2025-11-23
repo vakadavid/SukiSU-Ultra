@@ -5,6 +5,8 @@
 #include <linux/list.h>
 #include <linux/spinlock.h>
 
+#define MAX_PATHS 600
+
 struct cred;
 
 enum umount_entry_state {
@@ -56,7 +58,7 @@ int ksu_umount_manager_init(void);
 void ksu_umount_manager_exit(void);
 int ksu_umount_manager_add(const char *path, int flags, bool is_default);
 int ksu_umount_manager_remove(const char *path);
-void ksu_umount_manager_execute_all(const struct cred *cred);
+void ksu_umount_manager_execute_all(const struct cred *cred, const char **exclude_paths, u32 exclude_count);
 int ksu_umount_manager_get_entries(struct ksu_umount_entry_info __user *entries, u32 *count);
 int ksu_umount_manager_clear_custom(void);
 
