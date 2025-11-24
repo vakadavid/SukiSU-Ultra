@@ -5,6 +5,8 @@
 #include <linux/list.h>
 #include <linux/spinlock.h>
 
+#define MAX_PATHS 600
+
 struct cred;
 
 enum umount_entry_state {
