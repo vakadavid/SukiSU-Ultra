@@ -276,7 +276,7 @@ out:
     return ret;
 }
 
-void ksu_umount_manager_execute_all(const struct cred *cred)
+void ksu_umount_manager_execute_all(const struct cred *cred, const char **exclude_paths, u32 exclude_count)
 {
     struct umount_entry *entry;
     unsigned long flags;
