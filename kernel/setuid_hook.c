@@ -199,8 +199,6 @@ int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid)
 	return 0;
 }
 #else
-extern bool ksu_kernel_umount_enabled;
-extern bool ksu_module_mounted;
 int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid){
 	// we rely on the fact that zygote always call setresuid(3) with same uids
 	uid_t new_uid = ruid;
