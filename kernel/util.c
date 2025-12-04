@@ -2,7 +2,7 @@
 #include <linux/printk.h>
 #include <linux/mmap_lock.h>
 #include <asm/current.h>
-#include <linux/linux.h>
+#include <linux/version.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 #include <linux/pgtable.h>
 #else
