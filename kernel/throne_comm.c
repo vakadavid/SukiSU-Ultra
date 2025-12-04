@@ -12,7 +12,6 @@
 #include <linux/sched.h>
 #endif
 #include <linux/pid.h>
-#include <linux/version.h>
 
 #include "klog.h"
 #include "throne_comm.h"
