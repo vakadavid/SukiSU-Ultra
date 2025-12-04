@@ -1,5 +1,4 @@
 #include <linux/mm.h>
-#include <linux/pgtable.h>
 #include <linux/printk.h>
 #include <asm/current.h>
 
