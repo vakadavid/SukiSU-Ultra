@@ -9,6 +9,11 @@
 #include <linux/types.h>
 #include <linux/version.h>
 #include <linux/ptrace.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
+#include <linux/pgtable.h>
+#else
+#include <asm/pgtable.h>
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
 #include <linux/sched/task_stack.h>
 #else
