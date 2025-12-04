@@ -1,7 +1,7 @@
 #include <linux/mm.h>
 #include <linux/printk.h>
+#include <linux/mmap_lock.h>
 #include <asm/current.h>
-
 #include "util.h"
 
 bool try_set_access_flag(unsigned long addr)
