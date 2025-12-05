@@ -524,10 +524,6 @@
     <string name="kstat_config_updated">Kstat yapılandırması güncellendi</string>
     <string name="kstat_path_updated">Kstat yolu güncellendi</string>
     <string name="susfs_update_full_clone">Susfs tam klon güncellemesi</string>
-    <string name="umount_zygote_iso_service">Zygote İzolasyon Servisi Bağlantısını Kes</string>
-    <string name="umount_zygote_iso_service_description">Sistem başlangıcında Zygote izolasyon servisi bağlama noktalarının bağlantısını kesmek için bu seçeneği etkinleştirin</string>
-    <string name="umount_zygote_iso_service_enabled">Zygote izolasyon servisi bağlantı kesme etkinleştirildi</string>
-    <string name="umount_zygote_iso_service_disabled">Zygote izolasyon servisi bağlantı kesme devre dışı bırakıldı</string>
     <string name="app_paths_section">Uygulama Yolu</string>
     <string name="other_paths_section">Diğer yollar</string>
     <string name="add_custom_path">Diğer</string>
@@ -581,7 +577,7 @@
     <string name="avc_log_spoofing_enabled">AVC günlük kaydı taklidi etkinleştirildi</string>
     <string name="avc_log_spoofing_disabled">AVC günlük kaydı taklidi devre dışı bırakıldı</string>
     <string name="avc_log_spoofing_description">devre dışı: Çekirdekteki AVC günlük kaydında, \'su\' komutuna ait tcontext\'in taklit edilmesini devre dışı bırakır.\n
-etkin: Çekirdekteki AVC günlük kaydında, \'su\' komutuna ait tcontext\'i \'kernel\' olarak taklit etmeyi etkinleştirir.</string>
+etkin: Çekirdekteki AVC günlük kaydında, \'su\' komutuna ait tcontext\'i \'u:r:priv_app:s0:c512,c768\' olarak taklit etmeyi etkinleştirir.</string>
     <string name="avc_log_spoofing_warning">Önemli Not:\n
 - Çekirdekte varsayılan olarak \'0\' değerine ayarlıdır.\n
 - Bu özelliği etkinleştirmek, geliştiricilerin bir izin veya SELinux sorunu için hata ayıklaması yaparken sorunun kaynağını bulmalarını zorlaştırabilir. Bu nedenle, bu tür işlemler sırasında özelliğin devre dışı bırakılması tavsiye edilir.</string>

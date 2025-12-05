@@ -513,10 +513,6 @@
     <string name="kstat_config_updated">Kstat 配置更新</string>
     <string name="kstat_path_updated">Kstat 路徑更新</string>
     <string name="susfs_update_full_clone">Susfs 完整克隆更新</string>
-    <string name="umount_zygote_iso_service">解除安裝 Zygote 隔離服務</string>
-    <string name="umount_zygote_iso_service_description">啟用此選項將喺系統啟動時解除安裝 Zygote 隔離服務掛載點</string>
-    <string name="umount_zygote_iso_service_enabled">Zygote 隔離服務解除安裝已啟用</string>
-    <string name="umount_zygote_iso_service_disabled">Zygote 隔離服務解除安裝已禁用</string>
     <string name="app_paths_section">應用路徑</string>
     <string name="other_paths_section">其他路徑</string>
     <string name="add_custom_path">其他</string>
@@ -552,7 +548,7 @@
     <string name="avc_log_spoofing_enabled">AVC 日誌欺騙已經啟用</string>
     <string name="avc_log_spoofing_disabled">AVC 日誌欺騙已經禁用</string>
     <string name="avc_log_spoofing_description">禁用：喺核心 AVC 日誌入面禁用對 \'su\' 嘅 sus tcontext 進行欺騙。\n
-啟用：喺核心 AVC 日誌入面將 \'su\' 嘅 sus tcontext 欺騙成 \'kernel\'。</string>
+啟用：喺核心 AVC 日誌入面將 \'su\' 嘅 sus tcontext 欺騙成 \'u:r:priv_app:s0:c512,c768\'。</string>
     <string name="avc_log_spoofing_warning">重要提示：\n
 - 核心入面嘅預設設定係 \'0\'。\n
 - 啟用呢個功能有時會令到開發人員喺除錯權限或者 SELinux 問題嗰陣難以搵出原因，所以建議用戶喺除錯時禁用呢個功能。</string>

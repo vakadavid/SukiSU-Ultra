@@ -526,10 +526,6 @@
     <string name="kstat_config_updated">Pembaruan konfigurasi Kstat</string>
     <string name="kstat_path_updated">Pembaruan jalur Kstat</string>
     <string name="susfs_update_full_clone">Pembaruan full clone Susfs</string>
-    <string name="umount_zygote_iso_service">Lepas Layanan Isolasi Zygote</string>
-    <string name="umount_zygote_iso_service_description">Aktifkan opsi ini untuk melepaskan titik pemasangan layanan isolasi Zygote saat sistem mulai</string>
-    <string name="umount_zygote_iso_service_enabled">Lepas layanan isolasi Zygote diaktifkan</string>
-    <string name="umount_zygote_iso_service_disabled">Lepas layanan isolasi Zygote dinonaktifkan</string>
     <string name="app_paths_section">Jalur Aplikasi</string>
     <string name="other_paths_section">Jalur lainnya</string>
     <string name="add_custom_path">Lainnya</string>
@@ -583,7 +579,7 @@
     <string name="avc_log_spoofing_enabled">Palsukan log AVC telah diaktifkan</string>
     <string name="avc_log_spoofing_disabled">Palsukan log AVC telah dinonaktifkan</string>
     <string name="avc_log_spoofing_description">Dinonaktifkan: Nonaktifkan pemalsuan sus tcontext dari \'su\' yang ditampilkan di avc log di kernel\n
-Diaktifkan: Aktifkan pemalsuan sus tcontext dari \'su\' dengan \'kernel\' yang ditampilkan di avc log in kernel</string>
+Diaktifkan: Aktifkan pemalsuan sus tcontext dari \'su\' dengan \'u:r:priv_app:s0:c512,c768\' yang ditampilkan di avc log in kernel</string>
     <string name="avc_log_spoofing_warning">Catatan Penting:\n
 - Secara default pada kernel nilai ini disetel ke \'0\'\n
 - Mengaktifkan ini terkadang membuat pengembang lebih sulit mengidentifikasi penyebab saat melakukan debugging terkait izin atau masalah SELinux, sehingga disarankan agar pengguna menonaktifkannya saat sedang melakukan debugging</string>

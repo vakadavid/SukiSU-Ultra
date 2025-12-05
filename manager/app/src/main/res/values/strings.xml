@@ -408,8 +408,6 @@
     <string name="susfs_path_label">Path</string>
     <string name="susfs_path_placeholder">e.g.: /system/addon.d</string>
     <string name="susfs_no_paths_configured">No SUS paths configured</string>
-    <!-- SuSFS Umount Mode -->
-    <!-- SuSFS Run Umount -->
     <!-- SuSFS Reset Categories -->
     <string name="susfs_reset_paths_title">Reset SUS Paths</string>
     <string name="susfs_reset_paths_message">This will clear all SUS path configurations. Are you sure you want to continue?</string>
@@ -432,6 +430,7 @@
     <string name="enable_log_feature_label">Logging Support</string>
     <string name="hide_symbols_feature_label">Hide KSU SUSFS Symbols</string>
     <string name="sus_kstat_feature_label">SUS Kstat Support</string>
+    <string name="sus_map_feature_label">SUS Map Support</string>
     <!-- 可切换状态 -->
     <string name="susfs_feature_configurable">Configurable SuSFS Features</string>
     <string name="susfs_enable_log_label">SuSFS Enable Log</string>
@@ -536,10 +535,6 @@
     <string name="kstat_config_updated">Kstat config update</string>
     <string name="kstat_path_updated">Kstat path update</string>
     <string name="susfs_update_full_clone">Susfs update full clone</string>
-    <string name="umount_zygote_iso_service">Unmount Zygote Isolation Service</string>
-    <string name="umount_zygote_iso_service_description">Enable this option to unmount Zygote isolation service mount points at system startup</string>
-    <string name="umount_zygote_iso_service_enabled">Zygote isolation service unmount enabled</string>
-    <string name="umount_zygote_iso_service_disabled">Zygote isolation service unmount disabled</string>
     <string name="app_paths_section">Application Path</string>
     <string name="other_paths_section">Other paths</string>
     <string name="add_custom_path">Other</string>
@@ -595,7 +590,7 @@
     <string name="avc_log_spoofing_disabled">AVC log spoofing has been disabled</string>
     <string name="avc_log_spoofing_description">
 Disabled: Disable spoofing the sus tcontext of \'su\' shown in avc log in kernel\n
-Enabled: Enable spoofing the sus tcontext of \'su\' with \'kernel\' shown in avc log in kernel
+Enabled: Enable spoofing the sus tcontext of \'su\' with \'u:r:priv_app:s0:c512,c768\' shown in avc log in kernel
 </string>
     <string name="avc_log_spoofing_warning">
 Important Note:\n
@@ -716,7 +711,7 @@ Important Note:\n
     <string name="add_umount_path">Add Umount Path</string>
     <string name="mount_path">Mount Path</string>
     <string name="umount_flags">Unmount Flags</string>
-    <string name="umount_flags_hint">0=Normal unmount, 8=MNT_DETACH, -1=Auto</string>
+    <string name="umount_flags_hint">0=Normal unmount, 2=MNT_DETACH</string>
     <string name="flags">Flags</string>
     <string name="confirm_delete">Confirm Delete</string>
     <string name="confirm_delete_umount_path">Are you sure you want to delete the path %s?</string>

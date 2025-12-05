@@ -405,8 +405,6 @@
     <string name="susfs_path_label">路径</string>
     <string name="susfs_path_placeholder">例如: /system/addon.d</string>
     <string name="susfs_no_paths_configured">暂无 SuS 路径配置</string>
-    <!-- SuSFS Umount Mode -->
-    <!-- SuSFS Run Umount -->
     <!-- SuSFS Reset Categories -->
     <string name="susfs_reset_paths_title">重置 SuS 路径</string>
     <string name="susfs_reset_paths_message">这将清除所有 SuS 路径配置，确定要继续吗？</string>
@@ -429,6 +427,7 @@
     <string name="enable_log_feature_label">日志记录支持</string>
     <string name="hide_symbols_feature_label">隐藏 KSU SuSFS 符号</string>
     <string name="sus_kstat_feature_label">SuS Kstat 支持</string>
+    <string name="sus_map_feature_label">SUS Map 支持</string>
     <!-- 可切换状态 -->
     <string name="susfs_feature_configurable">可配置的 SuSFS 功能</string>
     <string name="susfs_enable_log_label">SuSFS 启用日志</string>
@@ -533,10 +532,6 @@
     <string name="kstat_config_updated">Kstat 配置更新</string>
     <string name="kstat_path_updated">Kstat 路径更新</string>
     <string name="susfs_update_full_clone">Susfs 完整克隆更新</string>
-    <string name="umount_zygote_iso_service">卸载 Zygote 隔离服务</string>
-    <string name="umount_zygote_iso_service_description">启用此选项将在系统启动时卸载 Zygote 隔离服务挂载点</string>
-    <string name="umount_zygote_iso_service_enabled">Zygote 隔离服务卸载已启用</string>
-    <string name="umount_zygote_iso_service_disabled">Zygote 隔离服务卸载已禁用</string>
     <string name="app_paths_section">应用路径</string>
     <string name="other_paths_section">其他路径</string>
     <string name="add_custom_path">其他</string>
@@ -591,7 +586,7 @@
     <string name="avc_log_spoofing_enabled">AVC 日志欺骗已启用</string>
     <string name="avc_log_spoofing_disabled">AVC 日志欺骗已禁用</string>
     <string name="avc_log_spoofing_description">禁用: 禁用在内核 AVC 日志中欺骗 \'su\' 的 sus tcontext。\n
-启用: 启用在内核 AVC 日志中将 \'su\' 的 sus tcontext 欺骗为 \'kernel\'</string>
+启用: 启用在内核 AVC 日志中将 \'su\' 的 sus tcontext 欺骗为 \'u:r:priv_app:s0:c512,c768\'</string>
     <string name="avc_log_spoofing_warning">重要提示：\n
 - 内核中默认设置为 \'0\'\n
 - 启用此功能有时会使开发人员在调试权限或 SELinux 问题时难以识别原因，因此建议用户在调试时禁用此功能。</string>
@@ -707,7 +702,7 @@
     <string name="add_umount_path">添加 Umount 路径</string>
     <string name="mount_path">挂载路径</string>
     <string name="umount_flags">卸载标志</string>
-    <string name="umount_flags_hint">0=正常卸载, 8=MNT_DETACH, -1=自动</string>
+    <string name="umount_flags_hint">0=正常卸载, 2=MNT_DETACH</string>
     <string name="flags">标志</string>
     <string name="confirm_delete">确认删除</string>
     <string name="confirm_delete_umount_path">确定要删除路径 %s 吗？</string>

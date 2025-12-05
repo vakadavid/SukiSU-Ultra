@@ -340,7 +340,7 @@ fun AddUmountPathDialog(
     onConfirm: (String, Int) -> Unit
 ) {
     var path by rememberSaveable { mutableStateOf("") }
-    var flags by rememberSaveable { mutableStateOf("-1") }
+    var flags by rememberSaveable { mutableStateOf("0") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -371,7 +371,7 @@ fun AddUmountPathDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val flagsInt = flags.toIntOrNull() ?: -1
+                    val flagsInt = flags.toIntOrNull() ?: 0
                     onConfirm(path, flagsInt)
                 },
                 enabled = path.isNotBlank()
@@ -396,7 +396,7 @@ private fun parseUmountPaths(output: String): List<UmountPathEntry> {
         if (parts.size >= 2) {
             UmountPathEntry(
                 path = parts[0],
-                flags = parts[1].toIntOrNull() ?: -1
+                flags = parts[1].toIntOrNull() ?: 0
             )
         } else null
     }
@@ -404,7 +404,7 @@ private fun parseUmountPaths(output: String): List<UmountPathEntry> {
 
 private fun Int.toUmountFlagName(context: Context): String {
     return when (this) {
-        -1 -> context.getString(R.string.mnt_detach)
+        2 -> context.getString(R.string.mnt_detach)
         else -> this.toString()
     }
 }

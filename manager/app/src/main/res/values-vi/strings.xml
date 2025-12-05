@@ -515,10 +515,6 @@
     <string name="kstat_config_updated">Cập nhật cấu hình Kstat</string>
     <string name="kstat_path_updated">Cập nhật Đường dẫn Kstat</string>
     <string name="susfs_update_full_clone">Cập nhật bản sao SuSFS đầy đủ</string>
-    <string name="umount_zygote_iso_service">Umount dịch vụ cô lập Zygote</string>
-    <string name="umount_zygote_iso_service_description">Umount các điểm dịch vụ cô lập Zygote khi khởi động hệ thống</string>
-    <string name="umount_zygote_iso_service_enabled">Umount dịch vụ cô lập Zygote đã bật</string>
-    <string name="umount_zygote_iso_service_disabled">Umount dịch vụ cô lập Zygote đã tắt</string>
     <string name="app_paths_section">Đường dẫn ứng dụng</string>
     <string name="other_paths_section">Đường dẫn khác</string>
     <string name="add_custom_path">Khác</string>
@@ -572,7 +568,7 @@
     <string name="avc_log_spoofing_enabled">Giả mạo nhật ký AVC đã kích hoạt</string>
     <string name="avc_log_spoofing_disabled">Giả mạo nhật ký AVC đã bị vô hiệu hoá</string>
     <string name="avc_log_spoofing_description">Tắt: Vô hiệu hoá tính năng giả mạo sus tcontext của \'su\' trong nhật ký AVC của kernel\n
-Bật: Kích hoạt tính năng giả mạo sus tcontext của \'su\' thành \'kernel\' trong nhật ký AVC của kernel</string>
+Bật: Kích hoạt tính năng giả mạo sus tcontext của \'su\' thành \'u:r:priv_app:s0:c512,c768\' trong nhật ký AVC của kernel</string>
     <string name="avc_log_spoofing_warning">Lưu ý quan trọng:\n
 - Giá trị này được đặt thành \'0\' theo mặc định trong kernel\n
 - Việc bật tính năng này đôi khi có thể khiến các nhà phát triển khó xác định nguyên nhân của các vấn đề về quyền hoặc SELinux khi gỡ lỗi, vì vậy người dùng nên tắt tính năng này khi gỡ lỗi</string>

@@ -2,7 +2,6 @@
 #include <linux/fs.h>
 #include <linux/kobject.h>
 #include <linux/module.h>
-#include <linux/workqueue.h>
 #include <linux/version.h>
 
 #include "allowlist.h"
@@ -12,17 +11,13 @@
 #include "syscall_hook_manager.h"
 #include "ksud.h"
 #include "supercalls.h"
+#include "ksu.h"
+
+struct cred* ksu_cred;
 
 #include "sulog.h"
 #include "throne_comm.h"
 #include "dynamic_manager.h"
-
-static struct workqueue_struct *ksu_workqueue;
-
-bool ksu_queue_work(struct work_struct *work)
-{
-    return queue_work(ksu_workqueue, work);
-}
 
 void sukisu_custom_config_init(void)
 {
@@ -50,6 +45,11 @@ int __init kernelsu_init(void)
     pr_alert("*************************************************************");
 #endif
 
+    ksu_cred = prepare_creds();
+    if (!ksu_cred) {
+        pr_err("prepare cred failed!\n");
+    }
+
     ksu_feature_init();
 
     ksu_supercalls_init();
@@ -57,8 +57,6 @@ int __init kernelsu_init(void)
     sukisu_custom_config_init();
 
     ksu_syscall_hook_manager_init();
-
-    ksu_workqueue = alloc_ordered_workqueue("kernelsu_work_queue", 0);
 
     ksu_allowlist_init();
 
@@ -87,8 +85,6 @@ void kernelsu_exit(void)
 
     ksu_throne_tracker_exit();
 
-    destroy_workqueue(ksu_workqueue);
-
 #ifdef KSU_KPROBES_HOOK
     ksu_ksud_exit();
 #endif
@@ -100,6 +96,10 @@ void kernelsu_exit(void)
     ksu_supercalls_exit();
     
     ksu_feature_exit();
+
+    if (ksu_cred) {
+        put_cred(ksu_cred);
+    }
 }
 
 module_init(kernelsu_init);

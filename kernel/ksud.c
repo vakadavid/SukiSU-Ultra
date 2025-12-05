@@ -22,6 +22,7 @@
 #include "arch.h"
 #include "klog.h" // IWYU pragma: keep
 #include "ksud.h"
+#include "util.h"
 #include "selinux/selinux.h"
 #include "throne_tracker.h"
 
@@ -34,19 +35,19 @@ static const char KERNEL_SU_RC[] =
     "on post-fs-data\n"
     "    start logd\n"
     // We should wait for the post-fs-data finish
-    "    exec u:r:su:s0 root -- " KSUD_PATH " post-fs-data\n"
+    "    exec u:r:" KERNEL_SU_DOMAIN ":s0 root -- " KSUD_PATH " post-fs-data\n"
     "\n"
 
     "on nonencrypted\n"
-    "    exec u:r:su:s0 root -- " KSUD_PATH " services\n"
+    "    exec u:r:" KERNEL_SU_DOMAIN ":s0 root -- " KSUD_PATH " services\n"
     "\n"
 
     "on property:vold.decrypt=trigger_restart_framework\n"
-    "    exec u:r:su:s0 root -- " KSUD_PATH " services\n"
+    "    exec u:r:" KERNEL_SU_DOMAIN ":s0 root -- " KSUD_PATH " services\n"
     "\n"
 
     "on property:sys.boot_completed=1\n"
-    "    exec u:r:su:s0 root -- " KSUD_PATH " boot-completed\n"
+    "    exec u:r:" KERNEL_SU_DOMAIN ":s0 root -- " KSUD_PATH " boot-completed\n"
     "\n"
 
     "\n";
@@ -88,11 +89,11 @@ void on_post_fs_data(void)
     is_boot_phase = false;
 
     ksu_file_sid = ksu_get_ksu_file_sid();
-	pr_info("ksu_file sid: %d\n", ksu_file_sid);
+    pr_info("ksu_file sid: %d\n", ksu_file_sid);
 }
 
 extern void ext4_unregister_sysfs(struct super_block *sb);
-int nuke_ext4_sysfs(const char* mnt)
+int nuke_ext4_sysfs(const char *mnt)
 {
 #ifdef CONFIG_EXT4_FS
     struct path path;
@@ -117,12 +118,14 @@ int nuke_ext4_sysfs(const char* mnt)
 #endif
 }
 
-void on_module_mounted(void){
+void on_module_mounted(void)
+{
     pr_info("on_module_mounted!\n");
     ksu_module_mounted = true;
 }
 
-void on_boot_completed(void){
+void on_boot_completed(void)
+{
     ksu_boot_completed = true;
     pr_info("on_boot_completed!\n");
     track_throne(true);
@@ -221,8 +224,6 @@ int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
 
     /* This applies to versions Android 10+ */
     static const char system_bin_init[] = "/system/bin/init";
-    /* This applies to versions between Android 6 ~ 9  */
-    static const char old_system_init[] = "/init";
     static bool init_second_stage_executed = false;
 
     if (!filename_ptr)
@@ -233,6 +234,7 @@ int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
         return 0;
     }
 
+    // https://cs.android.com/android/platform/superproject/+/android-16.0.0_r2:system/core/init/main.cpp;l=77
     if (unlikely(!memcmp(filename->name, system_bin_init,
                          sizeof(system_bin_init) - 1) &&
                  argv)) {
@@ -248,64 +250,11 @@ int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
                 if (!strcmp(first_arg, "second_stage")) {
                     pr_info("/system/bin/init second_stage executed\n");
                     apply_kernelsu_rules();
+                    setup_ksu_cred();
                     init_second_stage_executed = true;
                 }
             } else {
                 pr_err("/system/bin/init parse args err!\n");
-            }
-        }
-    } else if (unlikely(!memcmp(filename->name, old_system_init,
-                                sizeof(old_system_init) - 1) &&
-                        argv)) {
-        // /init executed
-        int argc = count(*argv, MAX_ARG_STRINGS);
-        pr_info("/init argc: %d\n", argc);
-        if (argc > 1 && !init_second_stage_executed) {
-            /* This applies to versions between Android 6 ~ 7 */
-            const char __user *p = get_user_arg_ptr(*argv, 1);
-            if (p && !IS_ERR(p)) {
-                char first_arg[16];
-                strncpy_from_user_nofault(first_arg, p, sizeof(first_arg));
-                pr_info("/init first arg: %s\n", first_arg);
-                if (!strcmp(first_arg, "--second-stage")) {
-                    pr_info("/init second_stage executed\n");
-                    apply_kernelsu_rules();
-                    init_second_stage_executed = true;
-                }
-            } else {
-                pr_err("/init parse args err!\n");
-            }
-        } else if (argc == 1 && !init_second_stage_executed && envp) {
-            /* This applies to versions between Android 8 ~ 9  */
-            int envc = count(*envp, MAX_ARG_STRINGS);
-            if (envc > 0) {
-                int n;
-                for (n = 1; n <= envc; n++) {
-                    const char __user *p = get_user_arg_ptr(*envp, n);
-                    if (!p || IS_ERR(p)) {
-                        continue;
-                    }
-                    char env[256];
-                    // Reading environment variable strings from user space
-                    if (strncpy_from_user_nofault(env, p, sizeof(env)) < 0)
-                        continue;
-                    // Parsing environment variable names and values
-                    char *env_name = env;
-                    char *env_value = strchr(env, '=');
-                    if (env_value == NULL)
-                        continue;
-                    // Replace equal sign with string terminator
-                    *env_value = '\0';
-                    env_value++;
-                    // Check if the environment variable name and value are matching
-                    if (!strcmp(env_name, "INIT_SECOND_STAGE") &&
-                        (!strcmp(env_value, "1") ||
-                         !strcmp(env_value, "true"))) {
-                        pr_info("/init second_stage executed\n");
-                        apply_kernelsu_rules();
-                        init_second_stage_executed = true;
-                    }
-                }
             }
         }
     }
@@ -318,6 +267,7 @@ int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
         struct task_struct *init_task;
         rcu_read_lock();
         init_task = rcu_dereference(current->real_parent);
+        // fallback for initial installation, ksud is not there
         if (init_task) {
             task_work_add(init_task, &on_post_fs_data_cb, TWA_RESUME);
         }
@@ -527,12 +477,25 @@ static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
     struct user_arg_ptr argv = { .ptr.native = __argv };
     struct filename filename_in, *filename_p;
     char path[32];
+    long ret;
+    unsigned long addr;
+    const char __user *fn;
 
     if (!filename_user)
         return 0;
 
+    addr = untagged_addr((unsigned long)*filename_user);
+    fn = (const char __user *)addr;
+
     memset(path, 0, sizeof(path));
-    strncpy_from_user_nofault(path, *filename_user, 32);
+    ret = strncpy_from_user_nofault(path, fn, 32);
+    if (ret < 0 && try_set_access_flag(addr)) {
+        ret = strncpy_from_user_nofault(path, fn, 32);
+    }
+    if (ret < 0) {
+        pr_err("Access filename failed for execve_handler_pre\n");
+        return 0;
+    }
     filename_in.name = path;
 
     filename_p = &filename_in;

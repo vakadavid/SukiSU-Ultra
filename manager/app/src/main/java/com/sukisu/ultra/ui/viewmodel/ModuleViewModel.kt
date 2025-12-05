@@ -101,8 +101,23 @@ class ModuleViewModel : ViewModel() {
     val moduleList by derivedStateOf {
         val comparator =
             compareBy<ModuleInfo>(
+                {
+                    val executable = it.hasWebUi || it.hasActionScript
+                    when {
+                        it.metamodule && it.enabled -> 0
+                        sortEnabledFirst && sortActionFirst -> when {
+                            it.enabled && executable -> 1
+                            it.enabled -> 2
+                            executable -> 3
+                            else -> 4
+                        }
+                        sortEnabledFirst && !sortActionFirst -> if (it.enabled) 1 else 2
+                        !sortEnabledFirst && sortActionFirst -> if (executable) 1 else 2
+                        else -> 1
+                    }
+                },
                 { if (sortEnabledFirst) !it.enabled else 0 },
-                { if (sortActionFirst) !it.hasWebUi && !it.hasActionScript else 0 },
+                { if (sortActionFirst) !(it.hasWebUi || it.hasActionScript) else 0 },
             ).thenBy(Collator.getInstance(Locale.getDefault()), ModuleInfo::id)
         modules.filter {
             it.id.contains(search, true) || it.name.contains(search, true) || HanziToPinyin.getInstance()
@@ -456,7 +471,7 @@ class ModuleSizeCache(context: Context) {
     private fun calculateModuleFolderSize(dirId: String): Long {
         return try {
             val shell = getRootShell()
-            val command = "du -sb /data/adb/modules/$dirId"
+            val command = "/data/adb/ksu/bin/busybox du -sb /data/adb/modules/$dirId"
             val result = shell.newJob().add(command).to(ArrayList(), null).exec()
 
             if (result.isSuccess && result.out.isNotEmpty()) {
