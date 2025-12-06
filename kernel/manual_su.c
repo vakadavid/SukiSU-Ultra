@@ -6,7 +6,6 @@
 #include <linux/uaccess.h>
 #include <linux/file.h>
 #include <linux/mm.h>
-#include <linux/mmap_lock.h>
 #include <linux/slab.h>
 #include <linux/binfmts.h>
 
