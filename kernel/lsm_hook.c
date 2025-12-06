@@ -1,3 +1,5 @@
+#include <linux/version.h>
+#include <linux/security.h>
 #include <linux/lsm_hooks.h>
 #include <linux/uidgid.h>
 #include <linux/version.h>
@@ -108,7 +110,7 @@ static int ksu_task_fix_setuid(struct cred *new, const struct cred *old,
 					old_euid.val);
 }
 
-static struct security_hook_list ksu_hooks[] = {
+static struct security_hook_list ksu_hooks[] = {{
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) ||                           \
 	defined(CONFIG_IS_HW_HISI) || defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
 	LSM_HOOK_INIT(key_permission, ksu_key_permission),
@@ -118,7 +120,7 @@ static struct security_hook_list ksu_hooks[] = {
 #if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0) && defined(CONFIG_KSU_MANUAL_SU)
 	LSM_HOOK_INIT(task_alloc, ksu_task_alloc),
 #endif
-};
+}};
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0)
 static const struct lsm_id ksu_lsmid = {
