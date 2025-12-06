@@ -5,7 +5,12 @@
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <linux/task_work.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/task.h>
+#else
 #include <linux/sched.h>
+#endif
 #include <linux/pid.h>
 #include <linux/version.h>
 
