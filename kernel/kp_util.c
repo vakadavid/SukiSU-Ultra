@@ -7,7 +7,6 @@
 #endif
 #include <linux/printk.h>
 #include <linux/preempt.h>
-#include <linux/mmap_lock.h>
 #include <asm/current.h>
 
 #include "kernel_compat.h"
