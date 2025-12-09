@@ -18,7 +18,7 @@ config KSU_DEBUG
 config KSU_ALLOWLIST_WORKAROUND
 	bool "KernelSU allowlist workaround"
 	depends on KSU
-	default n
+	default y
 	help
 	  Enable workaround for broken allowlist save
 
@@ -54,7 +54,7 @@ config KPM
 	  depends on KSU && 64BIT
 	  select KALLSYMS
 	  select KALLSYMS_ALL
-	  default n
+	  default y
 	  help
 		Enabling this option will activate the KPM feature of SukiSU.
 		This option is suitable for scenarios where you need to force KPM to be enabled.
@@ -72,7 +72,7 @@ config KSU_SUSFS
 	bool "KernelSU addon - SUSFS"
 	depends on KSU
 	depends on THREAD_INFO_IN_TASK
-	default n
+	default y
 	help
 		Patch and Enable SUSFS to kernel with KernelSU.
 
