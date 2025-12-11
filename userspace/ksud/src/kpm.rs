@@ -6,6 +6,7 @@ use std::{
 };
 
 use anyhow::{Result, bail};
+use libc::_IOWR;
 use notify::{RecursiveMode, Watcher};
 
 use crate::ksucalls::ksuctl;
@@ -21,7 +22,9 @@ const KPM_CONTROL: u64 = 6;
 const KPM_VERSION: u64 = 7;
 
 #[allow(clippy::unreadable_literal)]
-const KSU_IOCTL_KPM: u32 = 0xc0004bc8; // _IOC(_IOC_READ|_IOC_WRITE, 'K', 200, 0)
+const K: u32 = b'K' as u32;
+#[allow(clippy::unreadable_literal)]
+const KSU_IOCTL_KPM: i32 = _IOWR::<()>(K, 200);
 
 #[repr(C)]
 #[derive(Clone, Copy, Default)]

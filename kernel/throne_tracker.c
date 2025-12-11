@@ -16,9 +16,9 @@
 #include "dynamic_manager.h"
 #include "throne_comm.h"
 
-uid_t ksu_manager_uid = KSU_INVALID_UID;
-static uid_t locked_manager_uid = KSU_INVALID_UID;
-static uid_t locked_dynamic_manager_uid = KSU_INVALID_UID;
+uid_t ksu_manager_appid = KSU_INVALID_APPID;
+static uid_t locked_manager_uid = KSU_INVALID_APPID;
+static uid_t locked_dynamic_manager_uid = KSU_INVALID_APPID;
 
 #define KSU_UID_LIST_PATH "/data/misc/user_uid/uid_list"
 #define SYSTEM_PACKAGES_LIST_PATH "/data/system/packages.list"
@@ -164,16 +164,16 @@ static void crown_manager(const char *apk, struct list_head *uid_data, int signa
             bool is_dynamic = (signature_index == DYNAMIC_SIGN_INDEX || signature_index >= 2);
 
             if (is_dynamic) {
-                if (locked_dynamic_manager_uid != KSU_INVALID_UID && locked_dynamic_manager_uid != np->uid) {
+                if (locked_dynamic_manager_uid != KSU_INVALID_APPID && locked_dynamic_manager_uid != np->uid) {
                     pr_info("Unlocking previous dynamic manager UID: %d\n", locked_dynamic_manager_uid);
                     ksu_remove_manager(locked_dynamic_manager_uid);
-                    locked_dynamic_manager_uid = KSU_INVALID_UID;
+                    locked_dynamic_manager_uid = KSU_INVALID_APPID;
                 }
             } else {
-                if (locked_manager_uid != KSU_INVALID_UID && locked_manager_uid != np->uid) {
+                if (locked_manager_uid != KSU_INVALID_APPID && locked_manager_uid != np->uid) {
                     pr_info("Unlocking previous manager UID: %d\n", locked_manager_uid);
                     ksu_invalidate_manager_uid(); // unlock old one
-                    locked_manager_uid = KSU_INVALID_UID;
+                    locked_manager_uid = KSU_INVALID_APPID;
                 }
             }
 
@@ -185,12 +185,12 @@ static void crown_manager(const char *apk, struct list_head *uid_data, int signa
                 locked_dynamic_manager_uid = np->uid;
 
                 // If there is no traditional manager, set it to the current UID
-                if (!ksu_is_manager_uid_valid()) {
-                    ksu_set_manager_uid(np->uid);
+                if (!ksu_is_manager_appid_valid()) {
+                    ksu_set_manager_appid(np->uid);
                     locked_manager_uid = np->uid;
                 }
             } else {
-                ksu_set_manager_uid(np->uid); // throne new UID
+                ksu_set_manager_appid(np->uid); // throne new UID
                 locked_manager_uid = np->uid; // store locked UID
             }
             break;
@@ -413,7 +413,7 @@ static bool is_uid_exist(uid_t uid, char *package, void *data)
 
     bool exist = false;
     list_for_each_entry (np, list, list) {
-        if (np->uid == uid % 100000 &&
+        if (np->uid == uid % PER_USER_RANGE &&
             strncmp(np->package, package, KSU_MAX_PACKAGE_NAME) == 0) {
             exist = true;
             break;
@@ -433,7 +433,6 @@ void track_throne(bool prune_only)
     char buf[KSU_MAX_PACKAGE_NAME];
     static bool manager_exist = false;
     static bool dynamic_manager_exist = false;
-    int current_manager_uid = ksu_get_manager_uid() % 100000;
 
     // init uid list head
     INIT_LIST_HEAD(&uid_list);
@@ -504,22 +503,22 @@ uid_ready:
 
     // first, check if manager_uid exist!
     list_for_each_entry(np, &uid_list, list) {
-        if (np->uid == current_manager_uid) {
+        if (np->uid == ksu_get_manager_appid()) {
             manager_exist = true;
             break;
         }
     }
 
-    if (!manager_exist && locked_manager_uid != KSU_INVALID_UID) {
+    if (!manager_exist && locked_manager_uid != KSU_INVALID_APPID) {
         pr_info("Manager APK removed, unlock previous UID: %d\n",
                 locked_manager_uid);
         ksu_invalidate_manager_uid();
-        locked_manager_uid = KSU_INVALID_UID;
+        locked_manager_uid = KSU_INVALID_APPID;
     }
 
     // Check if the Dynamic Manager exists (only check locked UIDs)
     if (ksu_is_dynamic_manager_enabled() &&
-        locked_dynamic_manager_uid != KSU_INVALID_UID) {
+        locked_dynamic_manager_uid != KSU_INVALID_APPID) {
         list_for_each_entry(np, &uid_list, list) {
             if (np->uid == locked_dynamic_manager_uid) {
                 dynamic_manager_exist = true;
@@ -531,7 +530,7 @@ uid_ready:
             pr_info("Dynamic manager APK removed, unlock previous UID: %d\n",
                     locked_dynamic_manager_uid);
             ksu_remove_manager(locked_dynamic_manager_uid);
-            locked_dynamic_manager_uid = KSU_INVALID_UID;
+            locked_dynamic_manager_uid = KSU_INVALID_APPID;
         }
     }
 

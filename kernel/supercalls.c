@@ -259,14 +259,14 @@ static int do_uid_should_umount(void __user *arg)
     return 0;
 }
 
-static int do_get_manager_uid(void __user *arg)
+static int do_get_manager_appid(void __user *arg)
 {
-    struct ksu_get_manager_uid_cmd cmd;
+    struct ksu_get_manager_appid_cmd cmd;
 
-    cmd.uid = ksu_get_manager_uid();
+    cmd.appid = ksu_get_manager_appid();
 
     if (copy_to_user(arg, &cmd, sizeof(cmd))) {
-        pr_err("get_manager_uid: copy_to_user failed\n");
+        pr_err("get_manager_appid: copy_to_user failed\n");
         return -EFAULT;
     }
 
@@ -603,51 +603,6 @@ static int add_try_umount(void __user *arg)
             
             return 0;
         }
-
-        case KSU_UMOUNT_LIST: {
-            char *output_buf;
-            size_t output_size = cmd.buf_size ? cmd.buf_size : 4096;
-            size_t offset = 0;
-            int ret = 0;
-
-            if (!cmd.arg || !output_size)
-                return -EINVAL;
-
-            output_buf = kzalloc(output_size, GFP_KERNEL);
-            if (!output_buf)
-                return -ENOMEM;
-
-            // Write header
-            offset += snprintf(output_buf + offset, output_size - offset, 
-                              "Mount Point\tFlags\n");
-            offset += snprintf(output_buf + offset, output_size - offset, 
-                              "----------\t-----\n");
-
-            down_read(&mount_list_lock);
-            list_for_each_entry(entry, &mount_list, list) {
-                int written = snprintf(output_buf + offset, output_size - offset,
-                                      "%s\t%u\n", entry->umountable, entry->flags);
-                if (written < 0) {
-                    ret = -EFAULT;
-                    break;
-                }
-                if (written >= (int)(output_size - offset)) {
-                    ret = -ENOSPC;
-                    break;
-                }
-                offset += written;
-            }
-            up_read(&mount_list_lock);
-
-            if (ret == 0) {
-                if (copy_to_user((void __user *)cmd.arg, output_buf, offset)) {
-                    ret = -EFAULT;
-                }
-            }
-
-            kfree(output_buf);
-            return ret;
-        }
         
         default: {
             pr_err("cmd_add_try_umount: invalid operation %u\n", cmd.mode);
@@ -657,6 +612,55 @@ static int add_try_umount(void __user *arg)
     } // switch(cmd.mode)
     
     return 0;
+}
+
+static int list_try_umount(void __user *arg)
+{
+    struct ksu_list_try_umount_cmd cmd;
+    struct mount_entry *entry;
+    char *output_buf;
+    size_t output_size;
+    size_t offset = 0;
+    int ret = 0;
+
+    if (copy_from_user(&cmd, arg, sizeof(cmd)))
+        return -EFAULT;
+
+    output_size = cmd.buf_size ? cmd.buf_size : 4096;
+
+    if (!cmd.arg || output_size == 0)
+        return -EINVAL;
+
+    output_buf = kzalloc(output_size, GFP_KERNEL);
+    if (!output_buf)
+        return -ENOMEM;
+
+    offset += snprintf(output_buf + offset, output_size - offset, "Mount Point\tFlags\n");
+    offset += snprintf(output_buf + offset, output_size - offset, "----------\t-----\n");
+
+    down_read(&mount_list_lock);
+    list_for_each_entry(entry, &mount_list, list) {
+        int written = snprintf(output_buf + offset, output_size - offset,
+                               "%s\t%u\n", entry->umountable, entry->flags);
+        if (written < 0) {
+            ret = -EFAULT;
+            break;
+        }
+        if (written >= (int)(output_size - offset)) {
+            ret = -ENOSPC;
+            break;
+        }
+        offset += written;
+    }
+    up_read(&mount_list_lock);
+
+    if (ret == 0) {
+        if (copy_to_user((void __user *)cmd.arg, output_buf, offset))
+            ret = -EFAULT;
+    }
+
+    kfree(output_buf);
+    return ret;
 }
 
 // 100. GET_FULL_VERSION - Get full version string
@@ -870,7 +874,7 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
     { .cmd = KSU_IOCTL_GET_DENY_LIST, .name = "GET_DENY_LIST", .handler = do_get_deny_list, .perm_check = manager_or_root },
     { .cmd = KSU_IOCTL_UID_GRANTED_ROOT, .name = "UID_GRANTED_ROOT", .handler = do_uid_granted_root, .perm_check = manager_or_root },
     { .cmd = KSU_IOCTL_UID_SHOULD_UMOUNT, .name = "UID_SHOULD_UMOUNT", .handler = do_uid_should_umount, .perm_check = manager_or_root },
-    { .cmd = KSU_IOCTL_GET_MANAGER_UID, .name = "GET_MANAGER_UID", .handler = do_get_manager_uid, .perm_check = manager_or_root },
+    { .cmd = KSU_IOCTL_GET_MANAGER_APPID, .name = "GET_MANAGER_APPID", .handler = do_get_manager_appid, .perm_check = manager_or_root },
     { .cmd = KSU_IOCTL_GET_APP_PROFILE, .name = "GET_APP_PROFILE", .handler = do_get_app_profile, .perm_check = only_manager },
     { .cmd = KSU_IOCTL_SET_APP_PROFILE, .name = "SET_APP_PROFILE", .handler = do_set_app_profile, .perm_check = only_manager },
     { .cmd = KSU_IOCTL_GET_FEATURE, .name = "GET_FEATURE", .handler = do_get_feature, .perm_check = manager_or_root },
@@ -891,6 +895,7 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
 #ifdef CONFIG_KPM
     { .cmd = KSU_IOCTL_KPM, .name = "KPM_OPERATION", .handler = do_kpm, .perm_check = manager_or_root},
 #endif
+    { .cmd = KSU_IOCTL_LIST_TRY_UMOUNT, .name = "LIST_TRY_UMOUNT", .handler = list_try_umount, .perm_check = manager_or_root },
     { .cmd = 0, .name = NULL, .handler = NULL, .perm_check = NULL} // Sentine
 };
 

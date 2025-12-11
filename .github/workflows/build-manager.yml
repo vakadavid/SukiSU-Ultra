@@ -39,8 +39,11 @@ jobs:
       target: ${{ matrix.target }}
       os: ${{ matrix.os }}
 
+  build-ksuinit:
+    uses: ./.github/workflows/ksuinit.yml
+
   build-ksud:
-    needs: build-lkm
+    needs: [build-lkm, build-ksuinit]
     strategy:
       matrix:
         include:

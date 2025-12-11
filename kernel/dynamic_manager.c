@@ -145,7 +145,7 @@ int ksu_get_manager_signature_index(uid_t uid)
     int i;
     
     // Check traditional manager first
-    if (ksu_manager_uid != KSU_INVALID_UID && uid == ksu_manager_uid) {
+    if (ksu_manager_appid != KSU_INVALID_APPID && uid == ksu_manager_appid) {
         return DYNAMIC_SIGN_INDEX;
     }
     
@@ -194,8 +194,8 @@ int ksu_get_active_managers(struct manager_list_info *info)
     }
 
     // Add traditional manager first
-    if (ksu_manager_uid != KSU_INVALID_UID && count < 2) {
-        info->managers[count].uid = ksu_manager_uid;
+    if (ksu_manager_appid != KSU_INVALID_APPID && count < 2) {
+        info->managers[count].uid = ksu_manager_appid;
         info->managers[count].signature_index = 0;
         count++;
     }

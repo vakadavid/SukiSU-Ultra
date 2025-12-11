@@ -1,6 +1,6 @@
 #![allow(clippy::unreadable_literal)]
+use libc::{_IO, _IOR, _IOW, _IOWR};
 use std::fs;
-#[cfg(any(target_os = "linux", target_os = "android"))]
 use std::os::fd::RawFd;
 use std::sync::OnceLock;
 
@@ -9,17 +9,18 @@ const EVENT_POST_FS_DATA: u32 = 1;
 const EVENT_BOOT_COMPLETED: u32 = 2;
 const EVENT_MODULE_MOUNTED: u32 = 3;
 
-const KSU_IOCTL_GRANT_ROOT: u32 = 0x00004b01; // _IOC(_IOC_NONE, 'K', 1, 0)
-const KSU_IOCTL_GET_INFO: u32 = 0x80004b02; // _IOC(_IOC_READ, 'K', 2, 0)
-const KSU_IOCTL_REPORT_EVENT: u32 = 0x40004b03; // _IOC(_IOC_WRITE, 'K', 3, 0)
-const KSU_IOCTL_SET_SEPOLICY: u32 = 0xc0004b04; // _IOC(_IOC_READ|_IOC_WRITE, 'K', 4, 0)
-const KSU_IOCTL_CHECK_SAFEMODE: u32 = 0x80004b05; // _IOC(_IOC_READ, 'K', 5, 0)
-const KSU_IOCTL_GET_FEATURE: u32 = 0xc0004b0d; // _IOC(_IOC_READ|_IOC_WRITE, 'K', 13, 0)
-const KSU_IOCTL_SET_FEATURE: u32 = 0x40004b0e; // _IOC(_IOC_WRITE, 'K', 14, 0)
-const KSU_IOCTL_GET_WRAPPER_FD: u32 = 0x40004b0f; // _IOC(_IOC_WRITE, 'K', 15, 0)
-const KSU_IOCTL_MANAGE_MARK: u32 = 0xc0004b10; // _IOC(_IOC_READ|_IOC_WRITE, 'K', 16, 0)
-const KSU_IOCTL_NUKE_EXT4_SYSFS: u32 = 0x40004b11; // _IOC(_IOC_WRITE, 'K', 17, 0)
-const KSU_IOCTL_ADD_TRY_UMOUNT: u32 = 0xc0004b12; // _IOC(_IOC_READ|_IOC_WRITE, 'K', 18, 0)
+const K: u32 = b'K' as u32;
+const KSU_IOCTL_GRANT_ROOT: i32 = _IO(K, 1);
+const KSU_IOCTL_GET_INFO: i32 = _IOR::<()>(K, 2);
+const KSU_IOCTL_REPORT_EVENT: i32 = _IOW::<()>(K, 3);
+const KSU_IOCTL_SET_SEPOLICY: i32 = _IOWR::<()>(K, 4);
+const KSU_IOCTL_CHECK_SAFEMODE: i32 = _IOR::<()>(K, 5);
+const KSU_IOCTL_GET_FEATURE: i32 = _IOWR::<()>(K, 13);
+const KSU_IOCTL_SET_FEATURE: i32 = _IOW::<()>(K, 14);
+const KSU_IOCTL_GET_WRAPPER_FD: i32 = _IOW::<()>(K, 15);
+const KSU_IOCTL_MANAGE_MARK: i32 = _IOWR::<()>(K, 16);
+const KSU_IOCTL_NUKE_EXT4_SYSFS: i32 = _IOW::<()>(K, 17);
+const KSU_IOCTL_ADD_TRY_UMOUNT: i32 = _IOW::<()>(K, 18);
 
 #[repr(C)]
 #[derive(Clone, Copy, Default)]
@@ -85,10 +86,9 @@ pub struct NukeExt4SysfsCmd {
 #[repr(C)]
 #[derive(Clone, Copy, Default)]
 struct AddTryUmountCmd {
-    arg: u64,      // char ptr, this is the mountpoint (or output buffer for LIST)
-    flags: u32,    // this is the flag we use for it
-    mode: u8,      // denotes what to do with it 0:wipe_list 1:add_to_list 2:delete_entry 3:list
-    buf_size: u32, // buffer size for LIST mode
+    arg: u64,   // char ptr, this is the mountpoint
+    flags: u32, // this is the flag we use for it
+    mode: u8,   // denotes what to do with it 0:wipe_list 1:add_to_list 2:delete_entry
 }
 
 // Mark operation constants
@@ -101,18 +101,14 @@ const KSU_MARK_REFRESH: u32 = 4;
 const KSU_UMOUNT_WIPE: u8 = 0;
 const KSU_UMOUNT_ADD: u8 = 1;
 const KSU_UMOUNT_DEL: u8 = 2;
-const KSU_UMOUNT_LIST: u8 = 3;
 
 // Global driver fd cache
-#[cfg(any(target_os = "linux", target_os = "android"))]
 static DRIVER_FD: OnceLock<RawFd> = OnceLock::new();
-#[cfg(any(target_os = "linux", target_os = "android"))]
 static INFO_CACHE: OnceLock<GetInfoCmd> = OnceLock::new();
 
 const KSU_INSTALL_MAGIC1: u32 = 0xDEADBEEF;
 const KSU_INSTALL_MAGIC2: u32 = 0xCAFEBABE;
 
-#[cfg(any(target_os = "linux", target_os = "android"))]
 fn scan_driver_fd() -> Option<RawFd> {
     let fd_dir = fs::read_dir("/proc/self/fd").ok()?;
 
@@ -132,7 +128,6 @@ fn scan_driver_fd() -> Option<RawFd> {
 }
 
 // Get cached driver fd
-#[cfg(any(target_os = "linux", target_os = "android"))]
 fn init_driver_fd() -> Option<RawFd> {
     let fd = scan_driver_fd();
     if fd.is_none() {
@@ -153,16 +148,12 @@ fn init_driver_fd() -> Option<RawFd> {
 }
 
 // ioctl wrapper using libc
-#[cfg(any(target_os = "linux", target_os = "android"))]
-pub fn ksuctl<T>(request: u32, arg: *mut T) -> std::io::Result<i32> {
+pub fn ksuctl<T>(request: i32, arg: *mut T) -> std::io::Result<i32> {
     use std::io;
 
     let fd = *DRIVER_FD.get_or_init(|| init_driver_fd().unwrap_or(-1));
     unsafe {
-        #[cfg(not(target_env = "gnu"))]
-        let ret = libc::ioctl(fd as libc::c_int, request as i32, arg);
-        #[cfg(target_env = "gnu")]
-        let ret = libc::ioctl(fd as libc::c_int, request as u64, arg);
+        let ret = libc::ioctl(fd as libc::c_int, request, arg);
         if ret < 0 {
             Err(io::Error::last_os_error())
         } else {
@@ -171,13 +162,7 @@ pub fn ksuctl<T>(request: u32, arg: *mut T) -> std::io::Result<i32> {
     }
 }
 
-#[cfg(not(any(target_os = "linux", target_os = "android")))]
-fn ksuctl<T>(_request: u32, _arg: *mut T) -> std::io::Result<i32> {
-    Err(std::io::Error::from_raw_os_error(libc::ENOSYS))
-}
-
 // API implementations
-#[cfg(any(target_os = "linux", target_os = "android"))]
 fn get_info() -> GetInfoCmd {
     *INFO_CACHE.get_or_init(|| {
         let mut cmd = GetInfoCmd {
@@ -189,35 +174,19 @@ fn get_info() -> GetInfoCmd {
     })
 }
 
-#[cfg(any(target_os = "linux", target_os = "android"))]
 pub fn get_version() -> i32 {
     get_info().version as i32
 }
 
-#[cfg(not(any(target_os = "linux", target_os = "android")))]
-pub fn get_version() -> i32 {
-    0
-}
-
-#[cfg(any(target_os = "linux", target_os = "android"))]
 pub fn grant_root() -> std::io::Result<()> {
     ksuctl(KSU_IOCTL_GRANT_ROOT, std::ptr::null_mut::<u8>())?;
     Ok(())
 }
 
-#[cfg(not(any(target_os = "linux", target_os = "android")))]
-pub fn grant_root() -> std::io::Result<()> {
-    Err(std::io::Error::from_raw_os_error(libc::ENOSYS))
-}
-
-#[cfg(any(target_os = "linux", target_os = "android"))]
 fn report_event(event: u32) {
     let mut cmd = ReportEventCmd { event };
     let _ = ksuctl(KSU_IOCTL_REPORT_EVENT, &raw mut cmd);
 }
-
-#[cfg(not(any(target_os = "linux", target_os = "android")))]
-fn report_event(_event: u32) {}
 
 pub fn report_post_fs_data() {
     report_event(EVENT_POST_FS_DATA);
@@ -231,16 +200,10 @@ pub fn report_module_mounted() {
     report_event(EVENT_MODULE_MOUNTED);
 }
 
-#[cfg(any(target_os = "linux", target_os = "android"))]
 pub fn check_kernel_safemode() -> bool {
     let mut cmd = CheckSafemodeCmd { in_safe_mode: 0 };
     let _ = ksuctl(KSU_IOCTL_CHECK_SAFEMODE, &raw mut cmd);
     cmd.in_safe_mode != 0
-}
-
-#[cfg(not(any(target_os = "linux", target_os = "android")))]
-pub fn check_kernel_safemode() -> bool {
-    false
 }
 
 pub fn set_sepolicy(cmd: &SetSepolicyCmd) -> std::io::Result<()> {
@@ -268,7 +231,6 @@ pub fn set_feature(feature_id: u32, value: u64) -> std::io::Result<()> {
     Ok(())
 }
 
-#[cfg(any(target_os = "linux", target_os = "android"))]
 pub fn get_wrapped_fd(fd: RawFd) -> std::io::Result<RawFd> {
     let mut cmd = GetWrapperFdCmd { fd, flags: 0 };
     let result = ksuctl(KSU_IOCTL_GET_WRAPPER_FD, &raw mut cmd)?;
@@ -334,7 +296,6 @@ pub fn umount_list_wipe() -> std::io::Result<()> {
         arg: 0,
         flags: 0,
         mode: KSU_UMOUNT_WIPE,
-        buf_size: 0,
     };
     ksuctl(KSU_IOCTL_ADD_TRY_UMOUNT, &raw mut cmd)?;
     Ok(())
@@ -347,7 +308,6 @@ pub fn umount_list_add(path: &str, flags: u32) -> anyhow::Result<()> {
         arg: c_path.as_ptr() as u64,
         flags,
         mode: KSU_UMOUNT_ADD,
-        buf_size: 0,
     };
     ksuctl(KSU_IOCTL_ADD_TRY_UMOUNT, &raw mut cmd)?;
     Ok(())
@@ -360,23 +320,29 @@ pub fn umount_list_del(path: &str) -> anyhow::Result<()> {
         arg: c_path.as_ptr() as u64,
         flags: 0,
         mode: KSU_UMOUNT_DEL,
-        buf_size: 0,
     };
     ksuctl(KSU_IOCTL_ADD_TRY_UMOUNT, &raw mut cmd)?;
     Ok(())
+}
+
+const KSU_IOCTL_LIST_TRY_UMOUNT: i32 = _IOWR::<()>(K, 301);
+
+#[repr(C)]
+#[derive(Clone, Copy, Default)]
+struct ListTryUmountCmd {
+    arg: u64,
+    buf_size: u32,
 }
 
 /// List all mount points in umount list
 pub fn umount_list_list() -> anyhow::Result<String> {
     const BUF_SIZE: usize = 4096;
     let mut buffer = vec![0u8; BUF_SIZE];
-    let mut cmd = AddTryUmountCmd {
+    let mut cmd = ListTryUmountCmd {
         arg: buffer.as_mut_ptr() as u64,
-        flags: 0,
-        mode: KSU_UMOUNT_LIST,
         buf_size: BUF_SIZE as u32,
     };
-    ksuctl(KSU_IOCTL_ADD_TRY_UMOUNT, &raw mut cmd)?;
+    ksuctl(KSU_IOCTL_LIST_TRY_UMOUNT, &raw mut cmd)?;
 
     // Find null terminator or end of buffer
     let len = buffer.iter().position(|&b| b == 0).unwrap_or(BUF_SIZE);
