@@ -124,8 +124,8 @@ int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags)
 }
 
 int ksu_handle_execve_sucompat(const char __user **filename_user,
-                   void *__never_use_argv, void *__never_use_envp,
-                   int *__never_use_flags)
+                               void *__never_use_argv, void *__never_use_envp,
+                               int *__never_use_flags)
 {
     const char su[] = SU_PATH;
     const char __user *fn;
@@ -139,7 +139,7 @@ int ksu_handle_execve_sucompat(const char __user **filename_user,
 #if __SULOG_GATE
     bool is_allowed = ksu_is_allow_uid_for_current(current_uid().val);
     ksu_sulog_report_syscall(current_uid().val, NULL, "execve", path);
-    
+
     if (!is_allowed)
         return 0;
 

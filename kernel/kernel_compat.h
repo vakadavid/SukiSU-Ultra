@@ -10,8 +10,8 @@
  * paramters are the same as copy_from_user
  * 0 = success
  */
-static long ksu_copy_from_user_retry(void *to, 
-        const void __user *from, unsigned long count)
+static long ksu_copy_from_user_retry(void *to, const void __user *from,
+                                     unsigned long count)
 {
     long ret = copy_from_user_nofault(to, from, count);
     if (likely(!ret))

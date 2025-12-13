@@ -17,17 +17,20 @@
 
 #include "sulog.h"
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION (6, 7, 0)
-    static struct group_info root_groups = { .usage = REFCOUNT_INIT(2), };
-#else 
-    static struct group_info root_groups = { .usage = ATOMIC_INIT(2) };
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+static struct group_info root_groups = {
+    .usage = REFCOUNT_INIT(2),
+};
+#else
+static struct group_info root_groups = {
+    .usage = ATOMIC_INIT(2),
+};
 #endif
 
 static void setup_groups(struct root_profile *profile, struct cred *cred)
 {
     if (profile->groups_count > KSU_MAX_GROUPS) {
-        pr_warn("Failed to setgroups, too large group: %d!\n",
-            profile->uid);
+        pr_warn("Failed to setgroups, too large group: %d!\n", profile->uid);
         return;
     }
 
@@ -65,19 +68,19 @@ static void setup_groups(struct root_profile *profile, struct cred *cred)
 
 void disable_seccomp(void)
 {
-	assert_spin_locked(&current->sighand->siglock);
-	// disable seccomp
+    assert_spin_locked(&current->sighand->siglock);
+    // disable seccomp
 #if defined(CONFIG_GENERIC_ENTRY) &&                                           \
-	LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
-	clear_syscall_work(SECCOMP);
+    LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
+    clear_syscall_work(SECCOMP);
 #else
-	clear_thread_flag(TIF_SECCOMP);
+    clear_thread_flag(TIF_SECCOMP);
 #endif
 
 #ifdef CONFIG_SECCOMP
-	current->seccomp.mode = 0;
-	current->seccomp.filter = NULL;
-	atomic_set(&current->seccomp.filter_count, 0);
+    current->seccomp.mode = 0;
+    current->seccomp.filter = NULL;
+    atomic_set(&current->seccomp.filter_count, 0);
 #else
 #endif
 }
@@ -97,7 +100,8 @@ void escape_with_root_profile(void)
     if (cred->euid.val == 0) {
         pr_warn("Already root, don't escape!\n");
 #if __SULOG_GATE
-        ksu_sulog_report_su_grant(current_euid().val, NULL, "escape_to_root_failed");
+        ksu_sulog_report_su_grant(current_euid().val, NULL,
+                                  "escape_to_root_failed");
 #endif
         abort_creds(cred);
         return;
@@ -117,15 +121,13 @@ void escape_with_root_profile(void)
     cred->securebits = 0;
 
     BUILD_BUG_ON(sizeof(profile->capabilities.effective) !=
-             sizeof(kernel_cap_t));
+                 sizeof(kernel_cap_t));
 
     // setup capabilities
     // we need CAP_DAC_READ_SEARCH becuase `/data/adb/ksud` is not accessible for non root process
     // we add it here but don't add it to cap_inhertiable, it would be dropped automaticly after exec!
-    u64 cap_for_ksud =
-        profile->capabilities.effective | CAP_DAC_READ_SEARCH;
-    memcpy(&cred->cap_effective, &cap_for_ksud,
-           sizeof(cred->cap_effective));
+    u64 cap_for_ksud = profile->capabilities.effective | CAP_DAC_READ_SEARCH;
+    memcpy(&cred->cap_effective, &cap_for_ksud, sizeof(cred->cap_effective));
     memcpy(&cred->cap_permitted, &profile->capabilities.effective,
            sizeof(cred->cap_permitted));
     memcpy(&cred->cap_bset, &profile->capabilities.effective,
@@ -151,8 +153,9 @@ void escape_with_root_profile(void)
     }
 }
 
-void escape_to_root_for_init(void) {
-	setup_selinux(KERNEL_SU_CONTEXT);
+void escape_to_root_for_init(void)
+{
+    setup_selinux(KERNEL_SU_CONTEXT);
 }
 
 #ifdef CONFIG_KSU_MANUAL_SU
@@ -160,7 +163,7 @@ void escape_to_root_for_init(void) {
 #include "ksud.h"
 
 #ifndef DEVPTS_SUPER_MAGIC
-#define DEVPTS_SUPER_MAGIC    0x1cd1
+#define DEVPTS_SUPER_MAGIC 0x1cd1
 #endif
 
 static int __manual_su_handle_devpts(struct inode *inode)
@@ -178,11 +181,12 @@ static int __manual_su_handle_devpts(struct inode *inode)
     if (likely(!ksu_is_allow_uid_for_current(uid)))
         return 0;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(KSU_OPTIONAL_SELINUX_INODE)
-        struct inode_security_struct *sec = selinux_inode(inode);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) ||                           \
+    defined(KSU_OPTIONAL_SELINUX_INODE)
+    struct inode_security_struct *sec = selinux_inode(inode);
 #else
-        struct inode_security_struct *sec =
-            (struct inode_security_struct *)inode->i_security;
+    struct inode_security_struct *sec =
+        (struct inode_security_struct *)inode->i_security;
 #endif
     if (ksu_file_sid && sec)
         sec->sid = ksu_file_sid;
@@ -219,13 +223,14 @@ void escape_to_root_for_cmd_su(uid_t target_uid, pid_t target_pid)
     struct task_struct *p = current;
     struct task_struct *t;
 
-    pr_info("cmd_su: escape_to_root_for_cmd_su called for UID: %d, PID: %d\n", target_uid, target_pid);
+    pr_info("cmd_su: escape_to_root_for_cmd_su called for UID: %d, PID: %d\n",
+            target_uid, target_pid);
 
     // Find target task by PID
     rcu_read_lock();
     target_task = pid_task(find_vpid(target_pid), PIDTYPE_PID);
     if (!target_task) {
-        rcu_read_unlock(); 
+        rcu_read_unlock();
         pr_err("cmd_su: target task not found for PID: %d\n", target_pid);
 #if __SULOG_GATE
         ksu_sulog_report_su_grant(target_uid, "cmd_su", "target_not_found");
@@ -264,10 +269,14 @@ void escape_to_root_for_cmd_su(uid_t target_uid, pid_t target_pid)
     newcreds->egid.val = profile->gid;
     newcreds->securebits = 0;
 
-    u64 cap_for_cmd_su = profile->capabilities.effective | CAP_DAC_READ_SEARCH | CAP_SETUID | CAP_SETGID;
-    memcpy(&newcreds->cap_effective, &cap_for_cmd_su, sizeof(newcreds->cap_effective));
-    memcpy(&newcreds->cap_permitted, &profile->capabilities.effective, sizeof(newcreds->cap_permitted));
-    memcpy(&newcreds->cap_bset, &profile->capabilities.effective, sizeof(newcreds->cap_bset));
+    u64 cap_for_cmd_su = profile->capabilities.effective | CAP_DAC_READ_SEARCH |
+                         CAP_SETUID | CAP_SETGID;
+    memcpy(&newcreds->cap_effective, &cap_for_cmd_su,
+           sizeof(newcreds->cap_effective));
+    memcpy(&newcreds->cap_permitted, &profile->capabilities.effective,
+           sizeof(newcreds->cap_permitted));
+    memcpy(&newcreds->cap_bset, &profile->capabilities.effective,
+           sizeof(newcreds->cap_bset));
 
     setup_groups(profile, newcreds);
     task_lock(target_task);
@@ -302,6 +311,7 @@ void escape_to_root_for_cmd_su(uid_t target_uid, pid_t target_pid)
     for_each_thread (p, t) {
         ksu_set_task_tracepoint_flag(t);
     }
-    pr_info("cmd_su: privilege escalation completed for UID: %d, PID: %d\n", target_uid, target_pid);
+    pr_info("cmd_su: privilege escalation completed for UID: %d, PID: %d\n",
+            target_uid, target_pid);
 }
 #endif

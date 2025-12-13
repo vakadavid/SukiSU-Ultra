@@ -47,7 +47,8 @@ static const char KERNEL_SU_RC[] =
     "\n"
 
     "on property:sys.boot_completed=1\n"
-    "    exec u:r:" KERNEL_SU_DOMAIN ":s0 root -- " KSUD_PATH " boot-completed\n"
+    "    exec u:r:" KERNEL_SU_DOMAIN ":s0 root -- " KSUD_PATH
+    " boot-completed\n"
     "\n"
 
     "\n";
@@ -56,21 +57,11 @@ static void stop_vfs_read_hook();
 static void stop_execve_hook();
 static void stop_input_hook();
 
-#ifdef KSU_KPROBES_HOOK
 static struct work_struct stop_vfs_read_work;
 static struct work_struct stop_execve_hook_work;
 static struct work_struct stop_input_hook_work;
-#else
-bool ksu_vfs_read_hook __read_mostly = true;
-bool ksu_execveat_hook __read_mostly = true;
-bool ksu_input_hook __read_mostly = true;
-#endif
 
 u32 ksu_file_sid;
-
-// Detect whether it is on or not
-static bool is_boot_phase = true;
-
 void on_post_fs_data(void)
 {
     static bool done = false;
@@ -85,9 +76,6 @@ void on_post_fs_data(void)
     // sanity check, this may influence the performance
     stop_input_hook();
 
-    // End of boot state
-    is_boot_phase = false;
-
     ksu_file_sid = ksu_get_ksu_file_sid();
     pr_info("ksu_file sid: %d\n", ksu_file_sid);
 }
@@ -95,7 +83,6 @@ void on_post_fs_data(void)
 extern void ext4_unregister_sysfs(struct super_block *sb);
 int nuke_ext4_sysfs(const char *mnt)
 {
-#ifdef CONFIG_EXT4_FS
     struct path path;
     int err = kern_path(mnt, 0, &path);
     if (err) {
@@ -113,9 +100,7 @@ int nuke_ext4_sysfs(const char *mnt)
 
     ext4_unregister_sysfs(sb);
     path_put(&path);
-
     return 0;
-#endif
 }
 
 void on_module_mounted(void)
@@ -212,11 +197,6 @@ int ksu_handle_execveat_ksud(int *fd, struct filename **filename_ptr,
                              struct user_arg_ptr *argv,
                              struct user_arg_ptr *envp, int *flags)
 {
-#ifndef KSU_KPROBES_HOOK
-    if (!ksu_execveat_hook) {
-        return 0;
-    }
-#endif
     struct filename *filename;
 
     static const char app_process[] = "/system/bin/app_process";
@@ -310,11 +290,6 @@ static ssize_t read_iter_proxy(struct kiocb *iocb, struct iov_iter *to)
 static int ksu_handle_vfs_read(struct file **file_ptr, char __user **buf_ptr,
                                size_t *count_ptr, loff_t **pos)
 {
-#ifndef KSU_KPROBES_HOOK
-    if (!ksu_vfs_read_hook) {
-        return 0;
-    }
-#endif
     struct file *file;
     char __user *buf;
     size_t count;
@@ -401,7 +376,7 @@ static int ksu_handle_vfs_read(struct file **file_ptr, char __user **buf_ptr,
     return 0;
 }
 
-int ksu_handle_sys_read(unsigned int fd, char __user **buf_ptr,
+static int ksu_handle_sys_read(unsigned int fd, char __user **buf_ptr,
                                size_t *count_ptr)
 {
     struct file *file = fget(fd);
@@ -423,15 +398,10 @@ static bool is_volumedown_enough(unsigned int count)
 int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code,
                                   int *value)
 {
-#ifndef KSU_KPROBES_HOOK
-    if (!ksu_input_hook) {
-        return 0;
-    }
-#endif
     if (*type == EV_KEY && *code == KEY_VOLUMEDOWN) {
         int val = *value;
         pr_info("KEY_VOLUMEDOWN val: %d\n", val);
-        if (val && is_boot_phase) {
+        if (val) {
             // key pressed, count it
             volumedown_pressed_count += 1;
             if (is_volumedown_enough(volumedown_pressed_count)) {
@@ -464,8 +434,6 @@ bool ksu_is_safe_mode()
 
     return false;
 }
-
-#ifdef KSU_KPROBES_HOOK
 
 static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
@@ -550,28 +518,17 @@ static void do_stop_input_hook(struct work_struct *work)
 {
     unregister_kprobe(&input_event_kp);
 }
-#endif
 
 static void stop_vfs_read_hook()
 {
-#ifdef KSU_KPROBES_HOOK
     bool ret = schedule_work(&stop_vfs_read_work);
     pr_info("unregister vfs_read kprobe: %d!\n", ret);
-#else
-    ksu_vfs_read_hook = false;
-    pr_info("stop vfs_read_hook\n");
-#endif
 }
 
 static void stop_execve_hook()
 {
-#ifdef KSU_KPROBES_HOOK
     bool ret = schedule_work(&stop_execve_hook_work);
     pr_info("unregister execve kprobe: %d!\n", ret);
-#else
-    ksu_execveat_hook = false;
-    pr_info("stop execve_hook\n");
-#endif
 }
 
 static void stop_input_hook()
@@ -581,19 +538,13 @@ static void stop_input_hook()
         return;
     }
     input_hook_stopped = true;
-#ifdef KSU_KPROBES_HOOK
     bool ret = schedule_work(&stop_input_hook_work);
     pr_info("unregister input kprobe: %d!\n", ret);
-#else
-    ksu_input_hook = false;
-    pr_info("stop input_hook\n");
-#endif
 }
 
 // ksud: module support
 void ksu_ksud_init()
 {
-#ifdef KSU_KPROBES_HOOK
     int ret;
 
     ret = register_kprobe(&execve_kp);
@@ -608,16 +559,12 @@ void ksu_ksud_init()
     INIT_WORK(&stop_vfs_read_work, do_stop_vfs_read_hook);
     INIT_WORK(&stop_execve_hook_work, do_stop_execve_hook);
     INIT_WORK(&stop_input_hook_work, do_stop_input_hook);
-#endif
 }
 
 void ksu_ksud_exit()
 {
-#ifdef KSU_KPROBES_HOOK
     unregister_kprobe(&execve_kp);
     // this should be done before unregister vfs_read_kp
     // unregister_kprobe(&vfs_read_kp);
     unregister_kprobe(&input_event_kp);
-#endif
-    is_boot_phase = false;
 }

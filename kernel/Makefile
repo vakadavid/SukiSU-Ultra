@@ -6,7 +6,7 @@ $(info -- KDIR: $(KDIR))
 $(info -- MDIR: $(MDIR))
 endif
 
-.PHONY: all compdb clean
+.PHONY: all compdb clean format
 
 all: check_symbol
 	make -C $(KDIR) M=$(MDIR) modules
@@ -18,5 +18,7 @@ clean:
 	rm check_symbol
 check_symbol: tools/check_symbol.c
 	$(CC) tools/check_symbol.c -o check_symbol
+format:
+	find . -name "*.c" -o -name "*.h" -print0 | xargs -0 clang-format -i
 
 # Keep a new line here!! Because someone may append config

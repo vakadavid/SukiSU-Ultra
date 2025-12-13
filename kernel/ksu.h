@@ -1,6 +1,7 @@
 #ifndef __KSU_H_KSU
 #define __KSU_H_KSU
 
+#include <linux/version.h>
 #include <linux/types.h>
 #include <linux/cred.h>
 
@@ -14,7 +15,7 @@ extern bool ksu_uid_scanner_enabled;
 #define EVENT_MODULE_MOUNTED 3
 
 // SukiSU Ultra kernel su version full strings
-#ifndef KSU_VERSION_FULL 
+#ifndef KSU_VERSION_FULL
 #define KSU_VERSION_FULL "v3.x-00000000@unknown"
 #endif
 #define KSU_FULL_VERSION_STRING 255
@@ -57,6 +58,6 @@ static inline int endswith(const char *s, const char *t)
 }
 #endif
 
-extern struct cred* ksu_cred;
+extern struct cred *ksu_cred;
 
 #endif

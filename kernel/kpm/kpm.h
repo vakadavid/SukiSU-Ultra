@@ -11,11 +11,12 @@ struct ksu_kpm_cmd {
     __aligned_u64 __user result_code;
 };
 
-int sukisu_handle_kpm(unsigned long control_code, unsigned long arg3, unsigned long arg4, unsigned long result_code);
+int sukisu_handle_kpm(unsigned long control_code, unsigned long arg3,
+                      unsigned long arg4, unsigned long result_code);
 int sukisu_is_kpm_control_code(unsigned long control_code);
 int do_kpm(void __user *arg);
 
-#define KSU_IOCTL_KPM _IOC(_IOC_READ|_IOC_WRITE, 'K', 200, 0)
+#define KSU_IOCTL_KPM _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0)
 
 /* KPM Control Code */
 #define CMD_KPM_CONTROL 1

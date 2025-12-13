@@ -33,10 +33,4 @@ config KPM
     select KALLSYMS
     select KALLSYMS_ALL
 
-config KSU_MANUAL_HOOK
-    bool "Hook KernelSU manually"
-    depends on KSU != m
-    help
-      If enabled, Hook required KernelSU syscalls with manually-patched function.
-
 endmenu

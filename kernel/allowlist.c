@@ -583,10 +583,14 @@ bool ksu_temp_grant_root_once(uid_t uid)
     profile.rp_config.profile.uid = default_root_profile.uid;
     profile.rp_config.profile.gid = default_root_profile.gid;
     profile.rp_config.profile.groups_count = default_root_profile.groups_count;
-    memcpy(profile.rp_config.profile.groups, default_root_profile.groups, sizeof(default_root_profile.groups));
-    memcpy(&profile.rp_config.profile.capabilities, &default_root_profile.capabilities, sizeof(default_root_profile.capabilities));
+    memcpy(profile.rp_config.profile.groups, default_root_profile.groups,
+           sizeof(default_root_profile.groups));
+    memcpy(&profile.rp_config.profile.capabilities,
+           &default_root_profile.capabilities,
+           sizeof(default_root_profile.capabilities));
     profile.rp_config.profile.namespaces = default_root_profile.namespaces;
-    strcpy(profile.rp_config.profile.selinux_domain, default_root_profile.selinux_domain);
+    strcpy(profile.rp_config.profile.selinux_domain,
+           default_root_profile.selinux_domain);
 
     bool ok = ksu_set_app_profile(&profile, false);
     if (ok)
@@ -621,8 +625,10 @@ void ksu_temp_revoke_root_once(uid_t uid)
         strcpy(profile.key, default_key);
     }
 
-    profile.nrp_config.profile.umount_modules = default_non_root_profile.umount_modules;
-    strcpy(profile.rp_config.profile.selinux_domain, KSU_DEFAULT_SELINUX_DOMAIN);
+    profile.nrp_config.profile.umount_modules =
+        default_non_root_profile.umount_modules;
+    strcpy(profile.rp_config.profile.selinux_domain,
+           KSU_DEFAULT_SELINUX_DOMAIN);
 
     ksu_set_app_profile(&profile, false);
     persistent_allow_list();

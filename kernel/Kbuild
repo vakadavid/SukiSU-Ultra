@@ -13,7 +13,6 @@ kernelsu-objs += kernel_umount.o
 kernelsu-objs += supercalls.o
 kernelsu-objs += feature.o
 kernelsu-objs += ksud.o
-kernelsu-objs += embed_ksud.o
 kernelsu-objs += seccomp_cache.o
 kernelsu-objs += file_wrapper.o
 kernelsu-objs += util.o
@@ -113,15 +112,6 @@ endif
 ifdef KSU_MANAGER_PACKAGE
 ccflags-y += -DKSU_MANAGER_PACKAGE=\"$(KSU_MANAGER_PACKAGE)\"
 $(info -- SukiSU Manager package name: $(KSU_MANAGER_PACKAGE))
-endif
-
-ifeq ($(CONFIG_KSU_MANUAL_HOOK), y)
-ccflags-y += -DKSU_MANUAL_HOOK
-$(info -- SukiSU: KSU_MANUAL_HOOK Temporarily discontinued）)
-else
-ccflags-y += -DKSU_KPROBES_HOOK
-ccflags-y += -DKSU_TP_HOOK
-$(info -- SukiSU: KSU_TRACEPOINT_HOOK)
 endif
 
 KERNEL_VERSION := $(VERSION).$(PATCHLEVEL)

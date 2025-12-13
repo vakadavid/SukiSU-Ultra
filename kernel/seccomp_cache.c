@@ -8,8 +8,8 @@
 #include "klog.h" // IWYU pragma: keep
 #include "seccomp_cache.h"
 
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 2) // Android backport this feature in 5.10.2
+// Android backport this feature in 5.10.2
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 2)
 struct action_cache {
     DECLARE_BITMAP(allow_native, SECCOMP_ARCH_NATIVE_NR);
 #ifdef SECCOMP_ARCH_COMPAT
