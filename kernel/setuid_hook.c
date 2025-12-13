@@ -133,7 +133,7 @@ static void do_install_manager_fd(void)
 extern void disable_seccomp(struct task_struct *tsk);
 #ifndef CONFIG_KSU_SUSFS
 int ksu_handle_setuid_common(uid_t new_uid, uid_t old_uid, uid_t new_euid,
-				 uid_t old_euid)
+			     uid_t old_euid)
 {
 #ifdef CONFIG_KSU_DEBUG
 	pr_info("handle_set{res}uid from %d to %d\n", old_uid, new_uid);
@@ -151,7 +151,7 @@ int ksu_handle_setuid_common(uid_t new_uid, uid_t old_uid, uid_t new_euid,
 		}
 		// disallow appuid decrease to any other uid if it is not allowed to su
 		if (is_appuid(old_uid) && new_euid < old_euid &&
-			!ksu_is_allow_uid_for_current(old_uid)) {
+		    !ksu_is_allow_uid_for_current(old_uid)) {
 			pr_warn("find suspicious EoP: %d %s, from %d to %d\n",
 				current->pid, current->comm, old_euid,
 				new_euid);
@@ -163,7 +163,7 @@ int ksu_handle_setuid_common(uid_t new_uid, uid_t old_uid, uid_t new_euid,
 
 	// if on private space, see if its possibly the manager
 	if (new_uid > PER_USER_RANGE &&
-		new_uid % PER_USER_RANGE == ksu_get_manager_appid()) {
+	    new_uid % PER_USER_RANGE == ksu_get_manager_appid()) {
 		ksu_set_manager_appid(new_uid);
 	}
 
@@ -182,7 +182,7 @@ int ksu_handle_setuid_common(uid_t new_uid, uid_t old_uid, uid_t new_euid,
 
 	if (ksu_is_allow_uid_for_current(new_uid)) {
 		if (current->seccomp.mode == SECCOMP_MODE_FILTER &&
-			current->seccomp.filter) {
+		    current->seccomp.filter) {
 			spin_lock_irq(&current->sighand->siglock);
 			ksu_seccomp_allow_cache(current->seccomp.filter,
 						__NR_reboot);
@@ -200,7 +200,7 @@ int ksu_handle_setuid_common(uid_t new_uid, uid_t old_uid, uid_t new_euid,
 		disable_seccomp(current);
 		spin_unlock_irq(&current->sighand->siglock);
 		pr_info("install fd for manager (uid=%d)\n", new_uid);
-        do_install_manager_fd();
+		do_install_manager_fd();
 		return 0;
 	}
 
@@ -221,7 +221,8 @@ int ksu_handle_setuid_common(uid_t new_uid, uid_t old_uid, uid_t new_euid,
 	return 0;
 }
 #else
-int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid){
+int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid)
+{
 	// we rely on the fact that zygote always call setresuid(3) with same uids
 	uid_t new_uid = ruid;
 	uid_t old_uid = current_uid().val;
@@ -232,17 +233,20 @@ int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid){
 		// euid is what we care about here as it controls permission
 		if (unlikely(euid == 0)) {
 			if (!is_ksu_domain()) {
-				pr_warn("find suspicious EoP: %d %s, from %d to %d\n", 
-					current->pid, current->comm, old_uid, new_uid);
+				pr_warn("find suspicious EoP: %d %s, from %d to %d\n",
+					current->pid, current->comm, old_uid,
+					new_uid);
 				__force_sig(SIGKILL);
 				return 0;
 			}
 		}
 		// disallow appuid decrease to any other uid if it is not allowed to su
 		if (is_appuid(old_uid)) {
-			if (euid < current_euid().val && !ksu_is_allow_uid_for_current(old_uid)) {
-				pr_warn("find suspicious EoP: %d %s, from %d to %d\n", 
-					current->pid, current->comm, old_uid, new_uid);
+			if (euid < current_euid().val &&
+			    !ksu_is_allow_uid_for_current(old_uid)) {
+				pr_warn("find suspicious EoP: %d %s, from %d to %d\n",
+					current->pid, current->comm, old_uid,
+					new_uid);
 				__force_sig(SIGKILL);
 				return 0;
 			}
@@ -250,19 +254,19 @@ int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid){
 		return 0;
 	}
 
-    // if on private space, see if its possibly the manager
+	// if on private space, see if its possibly the manager
 	if (new_uid > PER_USER_RANGE &&
-		new_uid % PER_USER_RANGE == ksu_get_manager_appid()) {
+	    new_uid % PER_USER_RANGE == ksu_get_manager_appid()) {
 		ksu_set_manager_appid(new_uid);
 	}
-    
+
 	// We only interest in process spwaned by zygote
 	if (!susfs_is_sid_equal(current_cred()->security, susfs_zygote_sid)) {
 		return 0;
 	}
 
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-	// Check if spawned process is isolated service first, and force to do umount if so  
+	// Check if spawned process is isolated service first, and force to do umount if so
 	if (is_zygote_isolated_service_uid(new_uid)) {
 		goto do_umount;
 	}
@@ -277,20 +281,22 @@ int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid){
 		ksu_seccomp_allow_cache(current->seccomp.filter, __NR_reboot);
 		spin_unlock_irq(&current->sighand->siglock);
 		pr_info("install fd for manager (uid=%d)\n", new_uid);
-        do_install_manager_fd();
+		do_install_manager_fd();
 		return 0;
 	}
 
 	// Check if spawned process is normal user app and needs to be umounted
-	if (likely(is_zygote_normal_app_uid(new_uid) && ksu_uid_should_umount(new_uid))) {
+	if (likely(is_zygote_normal_app_uid(new_uid) &&
+		   ksu_uid_should_umount(new_uid))) {
 		goto do_umount;
 	}
 
 	if (ksu_is_allow_uid_for_current(new_uid)) {
 		if (current->seccomp.mode == SECCOMP_MODE_FILTER &&
-			current->seccomp.filter) {
+		    current->seccomp.filter) {
 			spin_lock_irq(&current->sighand->siglock);
-			ksu_seccomp_allow_cache(current->seccomp.filter, __NR_reboot);
+			ksu_seccomp_allow_cache(current->seccomp.filter,
+						__NR_reboot);
 			spin_unlock_irq(&current->sighand->siglock);
 		}
 	}
@@ -305,7 +311,8 @@ int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid){
 	}
 
 	// Check if spawned process is normal user app and needs to be umounted
-	if (likely(is_zygote_normal_app_uid(new_uid) && ksu_uid_should_umount(new_uid))) {
+	if (likely(is_zygote_normal_app_uid(new_uid) &&
+		   ksu_uid_should_umount(new_uid))) {
 		goto do_umount;
 	}
 
