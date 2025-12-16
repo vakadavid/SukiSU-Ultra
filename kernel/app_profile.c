@@ -27,6 +27,7 @@
 #include "kernel_compat.h"
 #include "klog.h" // IWYU pragma: keep
 #include "selinux/selinux.h"
+#include "su_mount_ns.h"
 #ifdef CONFIG_KSU_SYSCALL_HOOK
 #include "syscall_handler.h"
 #endif // #ifndef CONFIG_KSU_SUSFS
@@ -196,6 +197,8 @@ void escape_with_root_profile(void)
 		ksu_set_task_tracepoint_flag(t);
 	}
 #endif // #ifndef CONFIG_KSU_SUSFS
+
+    setup_mount_ns(profile->namespaces);
 }
 
 void escape_to_root_for_init(void)
@@ -344,6 +347,7 @@ void escape_to_root_for_cmd_su(uid_t target_uid, pid_t target_pid)
 		ksu_set_task_tracepoint_flag(t);
 	}
 #endif // #ifndef CONFIG_KSU_SUSFS
+    setup_mount_ns(profile->namespaces);
 	pr_info("cmd_su: privilege escalation completed for UID: %d, PID: %d\n",
 		target_uid, target_pid);
 }
