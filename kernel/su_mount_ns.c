@@ -18,6 +18,7 @@
 #include "arch.h"
 #include "klog.h" // IWYU pragma: keep
 #include "ksu.h"
+#include "kernel_compat.h"
 #include "su_mount_ns.h"
 
 extern int path_mount(const char *dev_name, struct path *path,
