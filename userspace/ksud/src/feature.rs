@@ -18,7 +18,7 @@ pub enum FeatureId {
     SuCompat = 0,
     KernelUmount = 1,
     EnhancedSecurity = 2,
-    SuLog = 3,
+    SuLog = 100,
 }
 
 impl FeatureId {
@@ -27,7 +27,7 @@ impl FeatureId {
             0 => Some(Self::SuCompat),
             1 => Some(Self::KernelUmount),
             2 => Some(Self::EnhancedSecurity),
-            3 => Some(Self::SuLog),
+            100 => Some(Self::SuLog),
             _ => None,
         }
     }
@@ -64,7 +64,7 @@ fn parse_feature_id(name: &str) -> Result<FeatureId> {
         "su_compat" | "0" => Ok(FeatureId::SuCompat),
         "kernel_umount" | "1" => Ok(FeatureId::KernelUmount),
         "enhanced_security" | "2" => Ok(FeatureId::EnhancedSecurity),
-        "sulog" | "3" => Ok(FeatureId::SuLog),
+        "sulog" | "100" => Ok(FeatureId::SuLog),
         _ => bail!("Unknown feature: {name}"),
     }
 }

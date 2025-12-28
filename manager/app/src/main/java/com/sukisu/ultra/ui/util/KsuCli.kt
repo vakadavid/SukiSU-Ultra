@@ -623,92 +623,6 @@ fun getZygiskImplement(): String {
     return "None"
 }
 
-fun getUidScannerDaemonPath(): String {
-    return ksuApp.applicationInfo.nativeLibraryDir + File.separator + "libuid_scanner.so"
-}
-
-private const val targetPath = "/data/adb/uid_scanner"
-fun ensureUidScannerExecutable(): Boolean {
-    val shell = getRootShell()
-    val uidScannerPath = getUidScannerDaemonPath()
-    if (!ShellUtils.fastCmdResult(shell, "test -f $targetPath")) {
-        val copyResult = ShellUtils.fastCmdResult(shell, "cp $uidScannerPath $targetPath")
-        if (!copyResult) {
-            return false
-        }
-    }
-
-    val result = ShellUtils.fastCmdResult(shell, "chmod 755 $targetPath")
-    return result
-}
-
-fun setUidAutoScan(enabled: Boolean): Boolean {
-    val shell = getRootShell()
-    if (!ensureUidScannerExecutable()) {
-        return false
-    }
-
-    val enableValue = if (enabled) 1 else 0
-    val cmd = "$targetPath --auto-scan $enableValue && $targetPath reload"
-    val result = ShellUtils.fastCmdResult(shell, cmd)
-
-    val throneResult = Natives.setUidScannerEnabled(enabled)
-
-    return result && throneResult
-}
-
-fun setUidMultiUserScan(enabled: Boolean): Boolean {
-    val shell = getRootShell()
-    if (!ensureUidScannerExecutable()) {
-        return false
-    }
-
-    val enableValue = if (enabled) 1 else 0
-    val cmd = "$targetPath --multi-user $enableValue && $targetPath reload"
-    val result = ShellUtils.fastCmdResult(shell, cmd)
-    return result
-}
-
-fun getUidMultiUserScan(): Boolean {
-    val shell = getRootShell()
-
-    val cmd = "grep 'multi_user_scan=' /data/misc/user_uid/uid_scanner.conf | cut -d'=' -f2"
-    val result = ShellUtils.fastCmd(shell, cmd).trim()
-
-    return try {
-        result.toInt() == 1
-    } catch (_: NumberFormatException) {
-        false
-    }
-}
-
-fun cleanRuntimeEnvironment(): Boolean {
-    val shell = getRootShell()
-    return try {
-        try {
-            ShellUtils.fastCmd(shell, "/data/adb/uid_scanner stop")
-        } catch (_: Exception) {
-        }
-        ShellUtils.fastCmdResult(shell, "rm -rf /data/misc/user_uid")
-        ShellUtils.fastCmdResult(shell, "rm -rf /data/adb/uid_scanner")
-        ShellUtils.fastCmdResult(shell, "rm -rf /data/adb/ksu/bin/user_uid")
-        ShellUtils.fastCmdResult(shell, "rm -rf /data/adb/service.d/uid_scanner.sh")
-        Natives.clearUidScannerEnvironment()
-        true
-    } catch (_: Exception) {
-        false
-    }
-}
-
-fun readUidScannerFile(): Boolean {
-    val shell = getRootShell()
-    return try {
-        ShellUtils.fastCmd(shell, "cat /data/adb/ksu/.uid_scanner").trim() == "1"
-    } catch (_: Exception) {
-        false
-    }
-}
-
 fun addUmountPath(path: String, flags: Int): Boolean {
     val shell = getRootShell()
     val flagsArg = if (flags >= 0) "--flags $flags" else ""
@@ -717,7 +631,6 @@ fun addUmountPath(path: String, flags: Int): Boolean {
     Log.i(TAG, "add umount path $path result: $result")
     return result
 }
-
 fun removeUmountPath(path: String): Boolean {
     val shell = getRootShell()
     val cmd = "${getKsuDaemonPath()} umount remove $path"

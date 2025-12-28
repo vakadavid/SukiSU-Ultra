@@ -23,7 +23,7 @@ use std::{
     process::Command,
     str::FromStr,
 };
-use zip_extensions::zip_extract_file_to_memory;
+use zip_extensions::inflate::zip_extract::zip_extract_file_to_memory;
 
 use crate::defs::{MODULE_DIR, MODULE_UPDATE_DIR, UPDATE_FILE_NAME};
 use crate::module::ModuleType::{Active, All};
@@ -51,8 +51,7 @@ pub fn validate_module_id(module_id: &str) -> Result<()> {
         Ok(())
     } else {
         Err(anyhow!(
-            "Invalid module ID: '{}'. Must match /^[a-zA-Z][a-zA-Z0-9._-]+$/",
-            module_id
+            "Invalid module ID: '{module_id}'. Must match /^[a-zA-Z][a-zA-Z0-9._-]+$/"
         ))
     }
 }
@@ -62,6 +61,7 @@ pub fn get_common_script_envs() -> Vec<(&'static str, String)> {
     vec![
         ("ASH_STANDALONE", "1".to_string()),
         ("KSU", "true".to_string()),
+        ("KSU_SUKISU", "true".to_string()),
         ("KSU_KERNEL_VER_CODE", ksucalls::get_version().to_string()),
         ("KSU_VER_CODE", defs::VERSION_CODE.to_string()),
         ("KSU_VER", defs::VERSION_NAME.to_string()),

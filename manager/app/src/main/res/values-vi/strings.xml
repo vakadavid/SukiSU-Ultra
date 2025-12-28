@@ -628,17 +628,6 @@ Bật: Kích hoạt tính năng giả mạo sus tcontext của \'su\' thành \'u
     <!-- KPM option radio group strings -->
     <string name="kpm_follow_kernel_file">Mặc định theo file Kernel</string>
     <string name="kpm_follow_kernel_description">Sử dụng file kernel mặc định mà không có bất kỳ sửa đổi nào về KPM</string>
-    <!-- UID Scanner Settings -->
-    <string name="uid_auto_scan_title">Chế độ quét danh sách ứng dụng người dùng</string>
-    <string name="uid_auto_scan_summary">Bật tuỳ chọn này thì chế độ người dùng sẽ được sử dụng để quét danh sách ứng dụng nhằm cải thiện tính ổn định (nếu danh sách ứng dụng quét kernel bị kẹt và xảy ra các sự cố khác, bạn có thể thử bật tùy chọn này)</string>
-    <string name="uid_multi_user_scan_title">Quét ứng dụng nhiều người dùng</string>
-    <string name="uid_multi_user_scan_summary">Khi được bật, tất cả ứng dụng của người dùng sẽ được quét, bao gồm cả dữ liệu công việc, v.v</string>
-    <string name="uid_scanner_setting_failed">Thiết lập thất bại, vui lòng kiểm tra quyền</string>
-    <string name="clean_runtime_environment">Dọn dẹp môi trường hoạt động</string>
-    <string name="clean_runtime_environment_summary">Dọn dẹp các file hoạt động và dừng quét các dịch vụ</string>
-    <string name="clean_runtime_environment_confirm">Bạn có chắc chắn muốn dọn dẹp môi trường hoạt động không? Thao tác này sẽ dừng dịch vụ quét và xóa các file liên quan</string>
-    <string name="clean_runtime_environment_success">Dọn dẹp môi trường hoạt động thành công</string>
-    <string name="clean_runtime_environment_failed">Dọn dẹp môi trường hoạt động thất bại</string>
     <!-- 确认安装相关字符串 -->
     <string name="confirm_installation">Xác nhận cài đặt</string>
     <string name="confirm_multiple_installation">Xác nhận cài đặt (%d files)</string>

@@ -49,7 +49,6 @@ import zako.zako.zako.zakoui.screen.moreSettings.component.SettingItem
 import zako.zako.zako.zakoui.screen.moreSettings.component.SettingsCard
 import zako.zako.zako.zakoui.screen.moreSettings.component.SettingsDivider
 import zako.zako.zako.zakoui.screen.moreSettings.component.SwitchSettingItem
-import zako.zako.zako.zakoui.screen.moreSettings.component.UidScannerSection
 import zako.zako.zako.zakoui.screen.moreSettings.state.MoreSettingsState
 import kotlin.math.roundToInt
 
@@ -388,25 +387,6 @@ private fun AdvancedSettings(
                 forceSignatureVerification = enabled
             }
         )
-
-        // UID 扫描开关
-        if (Natives.version >= Natives.MINIMAL_SUPPORTED_UID_SCANNER && Natives.version >= Natives.MINIMAL_NEW_IOCTL_KERNEL) {
-            UidScannerSection(prefs, snackBarHost, scope, context)
-        }
-
-        // 动态管理器设置
-        if (Natives.version >= Natives.MINIMAL_SUPPORTED_DYNAMIC_MANAGER && Natives.version >= Natives.MINIMAL_NEW_IOCTL_KERNEL) {
-            SettingItem(
-                icon = Icons.Filled.Security,
-                title = stringResource(R.string.dynamic_manager_title),
-                subtitle = if (state.isDynamicSignEnabled) {
-                    stringResource(R.string.dynamic_manager_enabled_summary, state.dynamicSignSize)
-                } else {
-                    stringResource(R.string.dynamic_manager_disabled)
-                },
-                onClick = { state.showDynamicSignDialog = true }
-            )
-        }
     }
 }
 

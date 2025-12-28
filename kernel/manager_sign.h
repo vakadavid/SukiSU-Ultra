@@ -6,13 +6,8 @@
 #define EXPECTED_HASH_SHIRKNEKO                                                \
     "947ae944f3de4ed4c21a7e4f7953ecf351bfa2b36239da37a34111ad29993eef"
 
-// Dynamic Sign
-#define EXPECTED_SIZE_OTHER 0x300
-#define EXPECTED_HASH_OTHER                                                    \
-    "0000000000000000000000000000000000000000000000000000000000000000"
-
 typedef struct {
-    unsigned size;
+    u32 size;
     const char *sha256;
 } apk_sign_key_t;
 

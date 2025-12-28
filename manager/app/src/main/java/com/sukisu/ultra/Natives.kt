@@ -28,8 +28,6 @@ object Natives {
 
     const val MINIMAL_SUPPORTED_DYNAMIC_MANAGER = 13215
 
-    const val MINIMAL_SUPPORTED_UID_SCANNER = 13347
-
     const val MINIMAL_NEW_IOCTL_KERNEL = 13490
 
     const val ROOT_UID = 0
@@ -130,63 +128,11 @@ object Natives {
     external fun isKPMEnabled(): Boolean
     external fun getHookType(): String
 
-    /**
-     * Get SUSFS feature status from kernel
-     * @return SusfsFeatureStatus object containing all feature states, or null if failed
-     */
-
-    /**
-     * Set dynamic managerature configuration
-     * @param size APK signature size
-     * @param hash APK signature hash (64 character hex string)
-     * @return true if successful, false otherwise
-     */
-    external fun setDynamicManager(size: Int, hash: String): Boolean
-
-
-    /**
-     * Get current dynamic managerature configuration
-     * @return DynamicManagerConfig object containing current configuration, or null if not set
-     */
-    external fun getDynamicManager(): DynamicManagerConfig?
-
-    /**
-     * Clear dynamic managerature configuration
-     * @return true if successful, false otherwise
-     */
-    external fun clearDynamicManager(): Boolean
-
-    /**
-     * Get active managers list when dynamic manager is enabled
-     * @return ManagersList object containing active managers, or null if failed or not enabled
-     */
-    external fun getManagersList(): ManagersList?
-
     // 模块签名验证
     external fun verifyModuleSignature(modulePath: String): Boolean
 
-    /**
-     * Check if UID scanner is currently enabled
-     * @return true if UID scanner is enabled, false otherwise
-     */
-    external fun isUidScannerEnabled(): Boolean
-
-    /**
-     * Enable or disable UID scanner
-     * @param enabled true to enable, false to disable
-     * @return true if operation was successful, false otherwise
-     */
-    external fun setUidScannerEnabled(enabled: Boolean): Boolean
-
-    /**
-     * Clear UID scanner environment (force exit)
-     * This will forcefully stop all UID scanner operations and clear the environment
-     * @return true if operation was successful, false otherwise
-     */
-    external fun clearUidScannerEnvironment(): Boolean
-
     external fun getUserName(uid: Int): String?
-
+    
     private const val NON_ROOT_DEFAULT_PROFILE_KEY = "$"
     private const val NOBODY_UID = 9999
 
@@ -211,37 +157,6 @@ object Natives {
         if (version != -1 && version < MINIMAL_SUPPORTED_KERNEL) return true
         return isVersionLessThan(getFullVersion(), MINIMAL_SUPPORTED_KERNEL_FULL)
     }
-
-    @Immutable
-    @Parcelize
-    @Keep
-    data class DynamicManagerConfig(
-        val size: Int = 0,
-        val hash: String = ""
-    ) : Parcelable {
-
-        fun isValid(): Boolean {
-            return size > 0 && hash.length == 64 && hash.all {
-                it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F'
-            }
-        }
-    }
-
-    @Immutable
-    @Parcelize
-    @Keep
-    data class ManagersList(
-        val count: Int = 0,
-        val managers: List<ManagerInfo> = emptyList()
-    ) : Parcelable
-
-    @Immutable
-    @Parcelize
-    @Keep
-    data class ManagerInfo(
-        val uid: Int = 0,
-        val signatureIndex: Int = 0
-    ) : Parcelable
 
     @Immutable
     @Parcelize

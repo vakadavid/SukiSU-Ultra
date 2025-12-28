@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="learn_more">了解更多</string>
     <string name="home">主页</string>
+    <string name="learn_more">了解更多</string>
     <string name="home_not_installed">未安装</string>
     <string name="home_click_to_install">点击安装</string>
     <string name="home_working">工作中</string>
@@ -35,7 +35,7 @@
     <string name="reboot_edl">重启到 EDL</string>
     <string name="about">关于</string>
     <string name="module_uninstall_confirm">确定要卸载模块 %s 吗？</string>
-    <string name="metamodule_uninstall_confirm">"您确定要卸载模块 %s 吗？此操作将影响所有模块，并且元模块提供的某些功能（如挂载）将不再工作。  "</string>
+    <string name="metamodule_uninstall_confirm">您确定要卸载模块 %s 吗？此操作将影响所有模块，并且元模块提供的某些功能（如挂载）将不再工作。  </string>
     <string name="module_uninstall_success">%s 已卸载</string>
     <string name="module_uninstall_failed">卸载失败：%s</string>
     <string name="module_version">版本</string>
@@ -201,6 +201,7 @@
     <string name="theme_light">浅色</string>
     <string name="theme_dark">深色</string>
     <string name="manual_hook">Manual Hook</string>
+    <string name="inline_hook">Inline Hook</string>
     <string name="dynamic_color_title">动态颜色</string>
     <string name="dynamic_color_summary">使用系统主题的动态颜色</string>
     <string name="choose_theme_color">选择主题色</string>
@@ -627,17 +628,6 @@
     <!-- KPM option radio group strings -->
     <string name="kpm_follow_kernel_file">跟随内核</string>
     <string name="kpm_follow_kernel_description">原样使用内核，不进行任何 KPM 修改</string>
-    <!-- UID Scanner Settings -->
-    <string name="uid_auto_scan_title">用户态扫描应用列表</string>
-    <string name="uid_auto_scan_summary">开启后将使用用户态扫描应用列表，提高稳定性 (因内核扫描应用列表出现卡死等问题可以尝试打开此选项) </string>
-    <string name="uid_multi_user_scan_title">多用户应用扫描</string>
-    <string name="uid_multi_user_scan_summary">开启后将扫描所有用户的应用，包括工作资料等</string>
-    <string name="uid_scanner_setting_failed">设置失败，请检查权限</string>
-    <string name="clean_runtime_environment">清理运行环境</string>
-    <string name="clean_runtime_environment_summary">清理运行时文件并停止扫描服务</string>
-    <string name="clean_runtime_environment_confirm">您确定要清理运行环境吗？这将停止扫描服务并删除相关文件</string>
-    <string name="clean_runtime_environment_success">运行环境清理成功</string>
-    <string name="clean_runtime_environment_failed">运行环境清理失败</string>
     <!-- 确认安装相关字符串 -->
     <string name="confirm_installation">确认安装</string>
     <string name="confirm_multiple_installation">确认安装（%d 个文件）</string>
@@ -715,6 +705,7 @@
     <string name="clear_custom_paths">清除自定义</string>
     <string name="apply_config">应用配置</string>
     <string name="config_applied">配置已应用到内核</string>
+    <string name="mnt_detach">Thanks</string>
     <string name="group_contains_apps">包含 %1$d 个应用</string>
     <string name="settings_disable_sulog"> 禁用超级用户日志 </string>
     <string name="settings_disable_sulog_summary">禁用 KernelSU 超级用户访问记录</string>
