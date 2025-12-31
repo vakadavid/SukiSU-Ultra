@@ -164,6 +164,8 @@ struct ksu_manual_su_cmd {
 #endif
 #define KSU_IOCTL_LIST_TRY_UMOUNT _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0)
 
+#define KSU_IOCTL_GET_SULOG_DUMP _IOC(_IOC_READ | _IOC_WRITE, 'K', 201, 0)
+
 // IOCTL handler types
 typedef int (*ksu_ioctl_handler_t)(void __user *arg);
 typedef bool (*ksu_perm_check_t)(void);

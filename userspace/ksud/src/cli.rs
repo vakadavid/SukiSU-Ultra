@@ -110,6 +110,8 @@ enum Commands {
         #[command(subcommand)]
         command: Kernel,
     },
+    /// Dump kernel sulog to file (/data/adb/ksu/log/sulog.log)
+    SulogDump,
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -730,6 +732,11 @@ pub fn run() -> Result<()> {
                 Ok(())
             }
         },
+        Commands::SulogDump => {
+            ksucalls::dump_sulog_to_file()?;
+            println!("sulog saved to /data/adb/ksu/log/sulog.log");
+            Ok(())
+        }
         #[cfg(target_arch = "aarch64")]
         Commands::Kpm { command } => {
             use crate::cli::kpm_cmd::Kpm;

@@ -660,7 +660,12 @@
     <string name="sus_maps_debug_info">首先通过 ps -enf 查找目标应用的 PID 和 UID，然后检查 /proc/&lt;pid&gt;/maps 中的相关路径，并与 /proc/1/mountinfo 中的设备号进行比对以确保一致性。只有当设备号一致时，隐藏映射才能正常工作。</string>
     <!-- Log Viewer -->
     <string name="log_viewer_title">日志查看器</string>
+    <string name="settings_view_sulog">查看 sulog 日志</string>
+    <string name="settings_view_sulog_summary">打开 sulog 查看器</string>
     <string name="log_viewer_back">返回</string>
+    <string name="sulog_blocked_label">已阻止</string>
+    <string name="sulog_allowed_label">允许</string>
+    <string name="sulog_ioctl_label">ioctl 提权</string>
     <string name="log_viewer_search">搜索</string>
     <string name="log_viewer_clear_logs">清空日志</string>
     <string name="log_viewer_clear_logs_confirm">确定要清空选中的日志文件吗？此操作无法撤销。</string>

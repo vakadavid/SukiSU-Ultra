@@ -16,17 +16,12 @@
 
 struct cred *ksu_cred;
 
-#include "sulog.h"
-
 void sukisu_custom_config_init(void)
 {
 }
 
 void sukisu_custom_config_exit(void)
 {
-#if __SULOG_GATE
-    ksu_sulog_exit();
-#endif
 }
 
 int __init kernelsu_init(void)
