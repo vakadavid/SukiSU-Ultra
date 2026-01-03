@@ -16,6 +16,7 @@ uid_t ksu_manager_appid = KSU_INVALID_APPID;
 
 #if defined(CONFIG_KSU_MANUAL_HOOK) && !defined(CONFIG_KSU_SUSFS)
 #define SYSTEM_PACKAGES_LIST_PATH "/data/system/packages.list.tmp"
+#else
 #define SYSTEM_PACKAGES_LIST_PATH "/data/system/packages.list"
 #endif
 
