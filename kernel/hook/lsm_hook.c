@@ -16,6 +16,10 @@ static int ksu_key_permission(key_ref_t key_ref, const struct cred *cred, unsign
 }
 #endif
 
+#ifdef CONFIG_KSU_SUSFS_TRY_UMOUNT
+extern void susfs_try_umount(uid_t uid);
+#endif // #ifdef CONFIG_KSU_SUSFS_TRY_UMOUNT
+
 #ifdef CONFIG_KSU_SUSFS
 extern u32 susfs_zygote_sid;
 extern void disable_seccomp(void);
